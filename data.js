@@ -1,21 +1,21 @@
 ﻿const nodeTypes = new FilterSet([
     new FilterOption("PERSON", "People", "black"),
-    new FilterOption("OBJECT", "Objects", "gray"),
+    new FilterOption("OBJECT", "Objects", "darkslategray"),
     new FilterOption("PLACE", "Places", "brown"),
     new FilterOption("CONCEPT", "Concepts", "green")
 ]);
 
 const edgeTypes = new FilterSet([
     new FilterOption("PUBLIC_RELATIONSHIP", "Public Relationships", "red"),
-    new FilterOption("SECRET_RELATIONSHIP", "Secret Relationships", "pink"),
-    new FilterOption("FAMILY", "Family", "purple"),
+    new FilterOption("SECRET_RELATIONSHIP", "Secret Relationships", "deeppink"),
+    new FilterOption("FAMILY", "Family", "indigo"),
     new FilterOption("FRIENDS", "Friendly", "blue"),
-    new FilterOption("BUSINESS", "Work", "brown"),
-    new FilterOption("DREAM", "Dreams", "green"),
+    new FilterOption("BUSINESS", "Work", "saddlebrown"),
+    new FilterOption("DREAM", "Dreams", "teal"),
     new FilterOption("CRIME", "Crimes & Conspiracies", "black"),
-    new FilterOption("EVIDENCE", "Mystery Evidence", "black"),
+    new FilterOption("EVIDENCE", "Mystery Evidence", "darkgoldenrod"),
     new FilterOption("UNCERTAIN", "Ambiguous or Uncertain Relevance", "lightgray"),
-    new FilterOption("OTHER", "Other", "black")
+    new FilterOption("OTHER", "Other", "darkgray")
 ]);
 
 const NODE_TYPES = nodeTypes.getFilterOptionsAsObject();
@@ -123,14 +123,15 @@ const baseNodes = [
     { id: "lucy", label: "Lucy", type: NODE_TYPES.PERSON, image: "lucy" },
     {
         id: "one_armed_man", type: NODE_TYPES.PERSON,
-        labels: { 1: "One armed man?" },
-        images: { 1: "one_armed_man" }
+        labels: { 1: "One armed man?", 5: "Phillip Michael Gerard,\nshoe salesman" },
+        images: { 1: "one_armed_man", 5: "phillip_michael_gerard" }
     },
     {
         id: "bobby_leo_cocaine_deal", type: NODE_TYPES.CONCEPT, episode: 2,
         labels: { 2: "$20,000", 3: "Cocaine deal" }
     },
     { id: "albert_rosenfield", label: "Albert Rosenfield", type: NODE_TYPES.PERSON, images: { 3: "albert_rosenfield" }, episode: 2 },
+    { id: "leos_bloody_shirt", label: "Bloody shirt", type: NODE_TYPES.OBJECT, image: "bloody_shirt", episode: 2 },
     {
         id: "jacques_renault", type: NODE_TYPES.PERSON, episode: 2,
         labels: { 2: "Jacques Renault\n(bartender at\nthe Roadhouse)", 4: "Jacques Renault" },
@@ -161,15 +162,33 @@ const baseNodes = [
         labels: { 4: "Madeleine", 5: "Madeleine Ferguson" }
     },
     { id: "bookhouse_boys", label: "The Bookhouse Boys", type: NODE_TYPES.CONCEPT, episode: 4 },
-    { id: "bernard_renault", label: "Bernard Renault", image: "bernard_renault", type: NODE_TYPES.PERSON, episode: 4 },
+    {
+        id: "bernard_renault", type: NODE_TYPES.PERSON, episode: 4,
+        labels: { 4: "Bernard Renault", 5: "Bernard Renault\n(deceased)"},
+        images: { 4: "bernard_renault", 5: "bernard_renault_corpse" }
+    },
     { id: "gordon_cole", label: "Gordon Cole", type: NODE_TYPES.PERSON, episode: 4 },
     { id: "drug_trade", label: "Twin Peaks\ndrug trade", type: NODE_TYPES.CONCEPT, episode: 4 },
-    { id: "packard_murder", label: "Murder conspiracy", type: NODE_TYPES.CONCEPT, episode: 4 },
-    { id: "bite_claw_marks", label: "Bite and claw marks", type: NODE_TYPES.OBJECT, episode: 4 },
+    { id: "packard_murder", label: "Murder conspiracy?", type: NODE_TYPES.CONCEPT, episode: 4 },
+    {
+        id: "bite_claw_marks", type: NODE_TYPES.OBJECT, episode: 4,
+        labels: { 4: "Bite and claw marks", 5: "Bite and claw marks\nfrom a parrot or myna bird" }
+    },
     { id: "soap_residue", label: "Soap residue", type: NODE_TYPES.OBJECT, episode: 4 },
-    { id: "plastic_fragment_j", label: "Plastic fragment\nwith letter 'J'", type: NODE_TYPES.OBJECT, episode: 4 },
+    {
+        id: "plastic_fragment_j", type: NODE_TYPES.OBJECT, episode: 4,
+        labels: { 4: "Plastic fragment\nwith letter 'J'", 5: "Poker chip fragment" },
+        images: { 5: "plastic_fragment_j" }
+    },
     { id: "twine_fragments_1", label: "Twine fragments\n(type 1)", type: NODE_TYPES.OBJECT, episode: 4 },
-    { id: "twine_fragments_2", label: "Twine fragments\n(type 2)", type: NODE_TYPES.OBJECT, episode: 4 }
+    { id: "twine_fragments_2", label: "Twine fragments\n(type 2)", type: NODE_TYPES.OBJECT, episode: 4 },
+    { id: "red_corvette", label: "Red corvette", type: NODE_TYPES.OBJECT, episode: 5 },
+    { id: "timber_falls", label: "Timber Falls Motel", image: "timber_falls", type: NODE_TYPES.PLACE, episode: 5 },
+    { id: "bob_lydecker", label: "Bob Lydecker", type: NODE_TYPES.PERSON, episode: 5 },
+    { id: "lydecker_clinic", label: "Lydecker\nVeterinary Clinic", image: "lydecker_clinic", type: NODE_TYPES.PLACE, episode: 5 },
+    { id: "waldo", label: "Waldo\nthe myna bird", type: NODE_TYPES.OBJECT, episode: 5 },
+    { id: "big_eds_gas_farm", label: "Big Ed's Gas Farm", type: NODE_TYPES.PLACE, image: "big_eds_gas_farm" },
+    { id: "rr_diner", label: "Double-R Diner", type: NODE_TYPES.PLACE }
 ];
 
 const baseEdges = [
@@ -182,8 +201,8 @@ const baseEdges = [
     { from: "laura_palmer", to: "johnny_horne", label: "Tutored", type: EDGE_TYPES.BUSINESS, arrows: "to" },
     { from: "laura_palmer", to: "pete_martell", label: "Found by", type: EDGE_TYPES.EVIDENCE, arrows: "to" },
     { from: "laura_palmer", to: "laura_killer", label: "Murdered", type: EDGE_TYPES.CRIME, arrows: "from" },
-    { from: "laura_palmer", to: "heart_necklace_laura", label: "Owned", type: EDGE_TYPES.OTHER, arrows: "to" },
-    { from: "laura_palmer", to: "heart_necklace_james", label: "Gave", type: EDGE_TYPES.OTHER, arrows: "to" },
+    { from: "laura_palmer", to: "heart_necklace_laura", label: "Owned", type: EDGE_TYPES.EVIDENCE, arrows: "to" },
+    { from: "laura_palmer", to: "heart_necklace_james", label: "Gave", type: EDGE_TYPES.EVIDENCE, arrows: "to" },
     { from: "laura_palmer", to: "laura_safe_deposit_box", label: "Owned", type: EDGE_TYPES.EVIDENCE, arrows: "to" },
     { from: "laura_palmer", to: "packard_sawmill", label: "Found near", type: EDGE_TYPES.EVIDENCE, arrows: "to" },
     { from: "laura_palmer", to: "train_car", label: "Murdered at?", type: EDGE_TYPES.CRIME, arrows: "to" },
@@ -193,8 +212,8 @@ const baseEdges = [
         labels: { 1: "Friends", 2: "Secret Relationship\n(post Laura's death)" },
         types: { 1: EDGE_TYPES.FRIENDS, 2: EDGE_TYPES.SECRET_RELATIONSHIP }
     },
-    { from: "heart_necklace_james", to: "james_hurley", label: "Given to", type: EDGE_TYPES.OTHER, arrows: "to" },
-    { from: "heart_necklace_laura", to: "heart_necklace_james", label: "Paired", type: EDGE_TYPES.OTHER },
+    { from: "heart_necklace_james", to: "james_hurley", label: "Given to", type: EDGE_TYPES.EVIDENCE, arrows: "to" },
+    { from: "heart_necklace_laura", to: "heart_necklace_james", label: "Paired", type: EDGE_TYPES.EVIDENCE },
     { from: "heart_necklace_laura", to: "train_car", label: "Found in", arrows: "to", type: EDGE_TYPES.EVIDENCE },
     { from: "leland_palmer", to: "sarah_palmer", label: "Married", type: EDGE_TYPES.PUBLIC_RELATIONSHIP },
     {
@@ -213,14 +232,15 @@ const baseEdges = [
     { from: "bobby_briggs", to: "mike_nelson", label: "Best Friends", type: EDGE_TYPES.FRIENDS },
     { from: "ed_hurley", to: "nadine_hurley", label: "Married", type: EDGE_TYPES.PUBLIC_RELATIONSHIP },
     { from: "ed_hurley", to: "norma_jennings", label: "Secret Relationship", type: EDGE_TYPES.SECRET_RELATIONSHIP },
+    { from: "ed_hurley", to: "big_eds_gas_farm", label: "Owns", arrows: "to", type: EDGE_TYPES.BUSINESS },
     { from: "norma_jennings", to: "hank_jennings", label: "Married", type: EDGE_TYPES.PUBLIC_RELATIONSHIP },
     { from: "bobby_briggs", to: "shelly_johnson", label: "Secret Relationship", type: EDGE_TYPES.SECRET_RELATIONSHIP },
     { from: "bobby_briggs", to: "major_briggs", label: "Parent/Child", type: EDGE_TYPES.FAMILY },
     {
-        from: "norma_jennings", to: "shelly_johnson", type: EDGE_TYPES.BUSINESS,
-        _arrows: { 4: "from" },
-        labels: { 1: "Works with", 4: "Works for" }
+        from: "norma_jennings", to: "rr_diner", type: EDGE_TYPES.BUSINESS, arrows: "to",
+        labels: { 1: "Works at", 4: "Owns" }
     },
+    { from: "shelly_johnson", to: "rr_diner", label: "Works at", arrows: "to", type: EDGE_TYPES.BUSINESS },
     { from: "shelly_johnson", to: "leo_johnson", label: "Married", type: EDGE_TYPES.PUBLIC_RELATIONSHIP },
     { from: "pete_martell", to: "packard_sawmill", label: "Works at", type: EDGE_TYPES.BUSINESS, arrows: "to" },
     { from: "pete_martell", to: "catherine_martell", label: "Married", type: EDGE_TYPES.PUBLIC_RELATIONSHIP },
@@ -255,7 +275,9 @@ const baseEdges = [
     { from: "harry_truman", to: "doc_hayward", label: "Works with", type: EDGE_TYPES.BUSINESS },
     { from: "harry_truman", to: "one_armed_man", label: "Observed\nat hospital", type: EDGE_TYPES.UNCERTAIN, arrows: "to" },
     { from: "dale_cooper", to: "one_armed_man", label: "Observed\nat hospital", type: EDGE_TYPES.UNCERTAIN, arrows: "to" },
-    { from: "deputy_andy", to: "lucy", label: "Sweetie", type: EDGE_TYPES.UNCERTAIN },
+    { from: "deputy_andy", to: "lucy", label: "'Sweetie'", type: EDGE_TYPES.UNCERTAIN },
+    { from: "shelly_johnson", to: "leos_bloody_shirt", label: "Found and stashed", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 2 },
+    { from: "leo_johnson", to: "leos_bloody_shirt", label: "Owned", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 2 },
     { from: "laura_palmer", to: "josie_packard", label: "Tutored\nin English", type: EDGE_TYPES.BUSINESS, arrows: "to", episode: 2 },
     { from: "dr_jacoby", to: "heart_necklace_james", label: "Recovered by?", type: EDGE_TYPES.EVIDENCE, arrows: "from", episode: 2 },
     { from: "bobby_briggs", to: "ten_thousand_cash", label: "Given by", type: EDGE_TYPES.EVIDENCE, arrows: "from", episode: 2 },
@@ -284,7 +306,10 @@ const baseEdges = [
     { from: "catherine_martell", to: "benjamin_horne", label: "Secret Relationship", type: EDGE_TYPES.SECRET_RELATIONSHIP, episode: 2 },
     { from: "benjamin_horne", to: "horne_conspiracy", label: "Mastermind", arrows: "to", type: EDGE_TYPES.CRIME, episode: 2 },
     { from: "catherine_martell", to: "horne_conspiracy", label: "Co-conspirator", arrows: "to", type: EDGE_TYPES.CRIME, episode: 2 },
-    { from: "horne_conspiracy", to: "josie_packard", label: "To force out", arrows: "to", type: EDGE_TYPES.CRIME, episode: 2 },
+    {
+        from: "horne_conspiracy", to: "josie_packard", arrows: "to", type: EDGE_TYPES.CRIME, episode: 2,
+        labels: { 2: "To force out", 5: "To frame\n& force out" }
+    },
     { from: "laura_palmer", to: "benjamin_horne", label: "'Sang for'??", arrows: "from", type: EDGE_TYPES.UNCERTAIN, episode: 3 },
     { from: "benjamin_horne", to: "jerry_horne", label: "Siblings", type: EDGE_TYPES.FAMILY, episode: 3 },
     { from: "benjamin_horne", to: "one_eyed_jacks", label: "Patron", arrows: "to", type: EDGE_TYPES.OTHER, episode: 3 },
@@ -327,8 +352,8 @@ const baseEdges = [
     { from: "dale_cooper", to: "gordon_cole", label: "Works for", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 4 },
     { from: "josie_packard", to: "packard_murder", label: "Suspects", arrows: "to", type: EDGE_TYPES.UNCERTAIN, episode: 4 },
     { from: "andrew_packard", to: "packard_murder", label: "Suspected victim", arrows: "from", type: EDGE_TYPES.UNCERTAIN, episode: 4 },
-    { from: "benjamin_horne", to: "packard_murder", label: "Suspected", arrows: "from", type: EDGE_TYPES.UNCERTAIN, episode: 4 },
-    { from: "catherine_martell", to: "packard_murder", label: "Suspected", arrows: "from", type: EDGE_TYPES.UNCERTAIN, episode: 4 },
+    { from: "benjamin_horne", to: "packard_murder", label: "Suspected\nperpetrator", arrows: "from", type: EDGE_TYPES.UNCERTAIN, episode: 4 },
+    { from: "catherine_martell", to: "packard_murder", label: "Suspected\nperpetrator", arrows: "from", type: EDGE_TYPES.UNCERTAIN, episode: 4 },
     { from: "laura_palmer", to: "drug_trade", label: "Used cocaine\nsourced from", arrows: "to", type: EDGE_TYPES.CRIME, episode: 4 },
     { from: "bobby_leo_cocaine_deal", to: "drug_trade", label: "Part of", arrows: "to", type: EDGE_TYPES.CRIME, episode: 4 },
     { from: "laura_palmer", to: "bite_claw_marks", label: "Found on", arrows: "from", type: EDGE_TYPES.EVIDENCE, episode: 4 },
@@ -342,4 +367,33 @@ const baseEdges = [
     { from: "laura_palmer", to: "madeleine_ferguson", label: "Cousins", type: EDGE_TYPES.FAMILY, episode: 4 },
     { from: "leland_palmer", to: "madeleine_ferguson", label: "Uncle/Niece", type: EDGE_TYPES.FAMILY, episode: 4 },
     { from: "bob", to: "fire_walk_with_me", label: "Had tattoo saying", arrows: "to", type: EDGE_TYPES.DREAM, episode: 4 },
+    { from: "sarah_palmer", to: "heart_necklace_james", label: "Had vision\nof recovery", arrows: "to", type: EDGE_TYPES.DREAM, episode: 5 },
+    { from: "dr_jacoby", to: "red_corvette", label: "On night of murder,\nfollowed someone driving", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 5 },
+    { from: "leo_johnson", to: "red_corvette", label: "Owns a", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 5 },
+    { from: "horne_conspiracy", to: "timber_falls", label: "Meets at", arrows: "to", type: EDGE_TYPES.CRIME, episode: 5 },
+    { from: "josie_packard", to: "timber_falls", label: "Surveilled", arrows: "to", type: EDGE_TYPES.CRIME, episode: 5 },
+    { from: "horne_conspiracy", to: "packard_sawmill", label: "Plan to\nburn down", arrows: "to", type: EDGE_TYPES.CRIME, episode: 5 },
+    { from: "one_armed_man", to: "bob_lydecker", label: "Best Friends", type: EDGE_TYPES.FRIENDS, episode: 5 },
+    { from: "one_armed_man", to: "timber_falls", label: "Staying at", type: EDGE_TYPES.OTHER, episode: 5 },
+    { from: "bob", to: "bob_lydecker", label: "???", type: EDGE_TYPES.UNCERTAIN, episode: 5 },
+    { from: "audrey_horne", to: "dale_cooper", label: "Wants to seduce", arrows: "to", type: EDGE_TYPES.SECRET_RELATIONSHIP, episode: 5 },
+    { from: "audrey_horne", to: "donna_hayward", label: "Investigating\nmurder together", type: EDGE_TYPES.CRIME, episode: 5 },
+    { from: "bob_lydecker", to: "lydecker_clinic", label: "Owns", type: EDGE_TYPES.BUSINESS, arrows: "to", episode: 5 },
+    { from: "laura_palmer", to: "madeleine_ferguson", label: "As kids, pretended\nthey were sisters", type: EDGE_TYPES.UNCERTAIN, episode: 5 },
+    { from: "audrey_horne", to: "hornes_department_store", label: "Asked to\nwork at", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 5 },
+    { from: "plastic_fragment_j", to: "one_eyed_jacks", label: "Originated from", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 5 },
+    { from: "waldo", to: "jacques_renault", label: "Owns", arrows: "from", type: EDGE_TYPES.EVIDENCE, episode: 5 },
+    { from: "waldo", to: "lydecker_clinic", label: "Treated", arrows: "from", type: EDGE_TYPES.OTHER, episode: 5 },
+    { from: "waldo", to: "bite_claw_marks", label: "Caused?", arrows: "from", type: EDGE_TYPES.UNCERTAIN, episode: 5 },
+    { from: "benjamin_horne", to: "hank_jennings", label: "Criminal associates", type: EDGE_TYPES.CRIME, episode: 5 },
+    { from: "leo_johnson", to: "hank_jennings", label: "Criminal associates", type: EDGE_TYPES.CRIME, episode: 5 },
+    { from: "leo_johnson", to: "bernard_renault", label: "Murdered", arrows: "to", type: EDGE_TYPES.CRIME, episode: 5 },
+    { from: "horne_conspiracy", to: "leo_johnson", label: "Hired for arson", arrows: "to", type: EDGE_TYPES.CRIME, episode: 5 },
+    { from: "benjamin_horne", to: "bernard_renault", label: "Knows about murder", arrows: "to", type: EDGE_TYPES.CRIME, episode: 5 },
+    { from: "benjamin_horne", to: "bobby_leo_cocaine_deal", label: "Knows about", arrows: "to", type: EDGE_TYPES.CRIME, episode: 5 },
+    { from: "benjamin_horne", to: "leo_johnson", label: "Criminal associates", type: EDGE_TYPES.CRIME, episode: 5 },
+    { from: "pete_martell", to: "josie_packard", label: "Fishing contest\npartners", type: EDGE_TYPES.FRIENDS, episode: 5 },
+    { from: "hank_jennings", to: "josie_packard", label: "Domino??", type: EDGE_TYPES.UNCERTAIN, episode: 5 },
+    { from: "bobby_briggs", to: "leos_bloody_shirt", label: "Given to", arrows: "from", type: EDGE_TYPES.CRIME, episode: 5 },
+    { from: "leos_bloody_shirt", to: "jacques_renault", label: "Planted at home of", arrows: "to", type: EDGE_TYPES.CRIME, episode: 5 }
 ];
