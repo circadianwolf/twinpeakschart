@@ -29,7 +29,7 @@ const baseNodes = [
             1: "laura_palmer_homecoming",
             2: "laura_palmer_1x02",
             3: "laura_palmer_vhs",
-            4: "laura_palmer_1x04"
+            "4_only": "laura_palmer_1x04"
         },
         fixed: true
     },
@@ -47,7 +47,7 @@ const baseNodes = [
     },
     {
         id: "leland_palmer", label: "Leland Palmer", type: NODE_TYPES.PERSON,
-        images: { 1: "leland_palmer", 3: "leland_palmer_1x03", "4_only": "leland_palmer_1x04" }
+        images: { 1: "leland_palmer", 3: "leland_palmer_1x03", 4: "leland_palmer_1x04", 5: "leland_palmer_1x05" }
     },
     {
         id: "sarah_palmer", label: "Sarah Palmer", type: NODE_TYPES.PERSON,
@@ -59,7 +59,7 @@ const baseNodes = [
     },
     {
         id: "dr_jacoby", label: "Dr. Jacoby", type: NODE_TYPES.PERSON,
-        images: { 1: "dr_jacoby", "4_only": "dr_jacoby_1x04" }
+        images: { 1: "dr_jacoby", 4: "dr_jacoby_1x04", 5: "dr_jacoby_1x05" }
     },
     {
         id: "johnny_horne", label: "Johnny Horne", type: NODE_TYPES.PERSON,
@@ -114,7 +114,7 @@ const baseNodes = [
     { id: "great_northern", label: "Great Northern hotel", image: "great_northern", type: NODE_TYPES.PLACE },
     {
         id: "dale_cooper", label: "Special Agent\nDale Cooper", type: NODE_TYPES.PERSON,
-        images: { 1: "dale_cooper_pilot", 2: "dale_cooper_1x02", 3: "dale_cooper_1x03", 4: "dale_cooper_1x04" }
+        images: { 1: "dale_cooper_pilot", 2: "dale_cooper_1x02", 3: "dale_cooper_1x03", 4: "dale_cooper_1x04", 5: "dale_cooper_1x05" }
     },
     { id: "diane", label: "Diane", type: NODE_TYPES.PERSON },
     { id: "harry_truman", label: "Sheriff Harry Truman", type: NODE_TYPES.PERSON, image: "sheriff_truman" },
@@ -126,6 +126,20 @@ const baseNodes = [
         labels: { 1: "One armed man?", 5: "Phillip Michael Gerard,\nshoe salesman" },
         images: { 1: "one_armed_man", 5: "phillip_michael_gerard" }
     },
+    { id: "harriet_hayward", label: "Harriet Hayward", type: NODE_TYPES.PERSON, image: "harriet_hayward" },
+    {
+        id: "eileen_hayward", label: "Eileen Hayward", type: NODE_TYPES.PERSON,
+        images: { 1: "eileen_hayward_pilot", 2: "eileen_hayward_1x02" }
+    },
+    {
+        id: "bett_briggs", label: "Bett Briggs", type: NODE_TYPES.PERSON,
+        images: { 1: "bett_briggs_pilot", 2: "bett_briggs_1x02" }
+    },
+    {
+        id: "sylvia_horne", type: NODE_TYPES.PERSON,
+        labels: { 1: "Mrs. Horne", 4: "Sylvia Horne" },
+        images: { 1: "sylvia_horne_pilot", 3: "sylvia_horne_1x03" }
+    },
     {
         id: "bobby_leo_cocaine_deal", type: NODE_TYPES.CONCEPT, episode: 2,
         labels: { 2: "$20,000", 3: "Cocaine deal" }
@@ -133,8 +147,7 @@ const baseNodes = [
     { id: "albert_rosenfield", label: "Albert Rosenfield", type: NODE_TYPES.PERSON, images: { 3: "albert_rosenfield" }, episode: 2 },
     { id: "leos_bloody_shirt", label: "Bloody shirt", type: NODE_TYPES.OBJECT, image: "bloody_shirt", episode: 2 },
     {
-        id: "jacques_renault", type: NODE_TYPES.PERSON, episode: 2,
-        labels: { 2: "Jacques Renault\n(bartender at\nthe Roadhouse)", 4: "Jacques Renault" },
+        id: "jacques_renault", type: NODE_TYPES.PERSON, label: "Jacques Renault", episode: 2,
         images: { 4: "jacques_renault" }
     },
     {
@@ -177,7 +190,7 @@ const baseNodes = [
     { id: "soap_residue", label: "Soap residue", type: NODE_TYPES.OBJECT, episode: 4 },
     {
         id: "plastic_fragment_j", type: NODE_TYPES.OBJECT, episode: 4,
-        labels: { 4: "Plastic fragment\nwith letter 'J'", 5: "Poker chip fragment" },
+        labels: { 4: "Plastic fragment\nwith letter 'J'", 5: "Poker chip fragment\nwith letter 'J'" },
         images: { 5: "plastic_fragment_j" }
     },
     { id: "twine_fragments_1", label: "Twine fragments\n(type 1)", type: NODE_TYPES.OBJECT, episode: 4 },
@@ -188,7 +201,8 @@ const baseNodes = [
     { id: "lydecker_clinic", label: "Lydecker\nVeterinary Clinic", image: "lydecker_clinic", type: NODE_TYPES.PLACE, episode: 5 },
     { id: "waldo", label: "Waldo\nthe myna bird", type: NODE_TYPES.OBJECT, episode: 5 },
     { id: "big_eds_gas_farm", label: "Big Ed's Gas Farm", type: NODE_TYPES.PLACE, image: "big_eds_gas_farm" },
-    { id: "rr_diner", label: "Double-R Diner", type: NODE_TYPES.PLACE }
+    { id: "rr_diner", label: "Double-R Diner", image: "rr_diner", type: NODE_TYPES.PLACE },
+    { id: "roadhouse", label: "The Roadhouse", image: "roadhouse", type: NODE_TYPES.PLACE, episode: 2 }
 ];
 
 const baseEdges = [
@@ -276,6 +290,16 @@ const baseEdges = [
     { from: "harry_truman", to: "one_armed_man", label: "Observed\nat hospital", type: EDGE_TYPES.UNCERTAIN, arrows: "to" },
     { from: "dale_cooper", to: "one_armed_man", label: "Observed\nat hospital", type: EDGE_TYPES.UNCERTAIN, arrows: "to" },
     { from: "deputy_andy", to: "lucy", label: "'Sweetie'", type: EDGE_TYPES.UNCERTAIN },
+    { from: "eileen_hayward", to: "doc_hayward", label: "Married", type: EDGE_TYPES.PUBLIC_RELATIONSHIP },
+    { from: "eileen_hayward", to: "donna_hayward", label: "Parent/Child", type: EDGE_TYPES.FAMILY },
+    { from: "eileen_hayward", to: "harriet_hayward", label: "Parent/Child", type: EDGE_TYPES.FAMILY },
+    { from: "harriet_hayward", to: "doc_hayward", label: "Parent/Child", type: EDGE_TYPES.FAMILY },
+    { from: "harriet_hayward", to: "donna_hayward", label: "Siblings", type: EDGE_TYPES.FAMILY },
+    { from: "bett_briggs", to: "major_briggs", label: "Married", type: EDGE_TYPES.PUBLIC_RELATIONSHIP },
+    { from: "bett_briggs", to: "bobby_briggs", label: "Parent/Child", type: EDGE_TYPES.FAMILY },
+    { from: "sylvia_horne", to: "benjamin_horne", label: "Married", type: EDGE_TYPES.PUBLIC_RELATIONSHIP },
+    { from: "sylvia_horne", to: "audrey_horne", label: "Parent/Child", type: EDGE_TYPES.FAMILY },
+    { from: "sylvia_horne", to: "johnny_horne", label: "Parent/Child", type: EDGE_TYPES.FAMILY },
     { from: "shelly_johnson", to: "leos_bloody_shirt", label: "Found and stashed", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 2 },
     { from: "leo_johnson", to: "leos_bloody_shirt", label: "Owned", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 2 },
     { from: "laura_palmer", to: "josie_packard", label: "Tutored\nin English", type: EDGE_TYPES.BUSINESS, arrows: "to", episode: 2 },
@@ -299,6 +323,7 @@ const baseEdges = [
     { from: "laura_palmer", to: "norma_jennings", label: "Organized\n'Meals on Wheels'\nprogram with", type: EDGE_TYPES.BUSINESS, episode: 2 },
     { from: "dale_cooper", to: "albert_rosenfield", label: "Works with", type: EDGE_TYPES.BUSINESS, episode: 2 },
     { from: "ed_hurley", to: "jacques_renault", label: "Suspects he\nwas drugged by", type: EDGE_TYPES.CRIME, arrows: "to", episode: 2 },
+    { from: "jacques_renault", to: "roadhouse", label: "Bartender at", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 2 },
     { from: "sarah_palmer", to: "bob", label: "Hallucinated?", type: EDGE_TYPES.DREAM, arrows: "to", episode: 2 },
     { from: "benjamin_horne", to: "hornes_department_store", label: "Owns", type: EDGE_TYPES.BUSINESS, arrows: "to", episode: 2 },
     { from: "ronette_pulaski", to: "hornes_department_store", label: "Formerly\nworked at", type: EDGE_TYPES.BUSINESS, arrows: "to", episode: 2 },
@@ -348,6 +373,7 @@ const baseEdges = [
     { from: "jacques_renault", to: "bernard_renault", label: "Siblings", type: EDGE_TYPES.FAMILY, episode: 4 },
     { from: "jacques_renault", to: "drug_trade", label: "Conspirator", arrows: "to", type: EDGE_TYPES.CRIME, episode: 4 },
     { from: "bernard_renault", to: "drug_trade", label: "Conspirator", arrows: "to", type: EDGE_TYPES.CRIME, episode: 4 },
+    { from: "bernard_renault", to: "roadhouse", label: "Janitor at", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 4 },
     { from: "leo_johnson", to: "drug_trade", label: "Conspirator", arrows: "to", type: EDGE_TYPES.CRIME, episode: 4 },
     { from: "dale_cooper", to: "gordon_cole", label: "Works for", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 4 },
     { from: "josie_packard", to: "packard_murder", label: "Suspects", arrows: "to", type: EDGE_TYPES.UNCERTAIN, episode: 4 },
@@ -366,6 +392,7 @@ const baseEdges = [
     { from: "laura_palmer", to: "twine_fragments_2", label: "Found on", arrows: "from", type: EDGE_TYPES.EVIDENCE, episode: 4 },
     { from: "laura_palmer", to: "madeleine_ferguson", label: "Cousins", type: EDGE_TYPES.FAMILY, episode: 4 },
     { from: "leland_palmer", to: "madeleine_ferguson", label: "Uncle/Niece", type: EDGE_TYPES.FAMILY, episode: 4 },
+    { from: "sarah_palmer", to: "madeleine_ferguson", label: "Aunt/Niece", type: EDGE_TYPES.FAMILY, episode: 4 },
     { from: "bob", to: "fire_walk_with_me", label: "Had tattoo saying", arrows: "to", type: EDGE_TYPES.DREAM, episode: 4 },
     { from: "sarah_palmer", to: "heart_necklace_james", label: "Had vision\nof recovery", arrows: "to", type: EDGE_TYPES.DREAM, episode: 5 },
     { from: "dr_jacoby", to: "red_corvette", label: "On night of murder,\nfollowed someone driving", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 5 },

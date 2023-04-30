@@ -211,7 +211,6 @@ class EpisodicChartManager {
                 clearTimeout(nodeSearchTimeout);
 
             nodeSearchTimeout = setTimeout(() => {
-                console.log('searching');
                 this.#nodeSearchText = this.nodeSearchTextBox.value;
                 this.#refreshDataViews();
             }, 500);
