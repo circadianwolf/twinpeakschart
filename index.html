@@ -3,30 +3,32 @@
 <head>
     <title>Twin Peaks Relationship Chart</title>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <script src="dataStructures.js"></script>
     <script src="data.js"></script>
     <style type="text/css">
         body {
             font-family: Verdana,sans-serif;
+            margin:0;
         }
 
         #Chart {
             width: 100vw;
-            height: calc(100vh - 135px);
+            height: calc(100vh - 110px);
         }
 
         #Header {
             width: 100vw;
-            height: 135px;
+            height: 110px;
             background-color: #EEEEEE;
             user-select: none;
+            display:inline-block;
         }
 
         h1 {
+            text-align:center;
             font-size: 16pt;
             padding: 5px;
+            margin:0;
         }
 
         .hidden {
@@ -41,10 +43,12 @@
         }
 
         .col {
+            flex: 1 0 0%;
             width: fit-content;
         }
 
         .filterContainer {
+            padding-top:5px;
             display: flex;
             flex-wrap: wrap;
         }
@@ -57,6 +61,10 @@
             padding: 5px;
             padding-right: 15px;
         }
+
+        .episodeList, .nodeSearch {
+            padding-top:5px;
+        }
     </style>
 </head>
 <body>
@@ -68,32 +76,34 @@
         <h1>Twin Peaks Relationship Chart</h1>
         <div class="row">
             <div class="col" style="flex-grow:1">
-                Up to episode:
-                <select name="episode" id="episode">
-                    <option value="1">1x01 "Northwest Passage" (Pilot)</option>
-                    <option value="2">1x02 "Traces to Nowhere"</option>
-                    <option value="3">1x03 "Zen, or the Skill to Catch a Killer"</option>
-                    <option value="4">1x04 "Rest in Pain"</option>
-                    <option value="5">1x05 "The One-Armed Man"</option>
-                </select>
+                <div>Up to episode:</div>
+                <div class="episodeList">
+                    <select name="episode" id="episode">
+                        <option value="1">1x01 "Northwest Passage" (Pilot)</option>
+                        <option value="2">1x02 "Traces to Nowhere"</option>
+                        <option value="3">1x03 "Zen, or the Skill to Catch a Killer"</option>
+                        <option value="4">1x04 "Rest in Pain"</option>
+                        <option value="5">1x05 "The One-Armed Man"</option>
+                    </select>
+                </div>
             </div>
             <div class="col" style="flex-grow:1">
                 <div class="collapseHeader">Node Types <span class="arrow">&#9658;</span></div>
-                <div id="NodeFilterContainer" class="collapseBody filterContainer hidden"></div>
+                <div id="NodeFilterContainer" class="collapseBody filterContainer"></div>
             </div>
-            <div class="col" style="flex-grow:2">
+            <div class="col" style="flex-grow:3">
                 <div class="collapseHeader">Link Types <span class="arrow">&#9658;</span></div>
-                <div id="EdgeFilterContainer" class="collapseBody filterContainer hidden"></div>
+                <div id="EdgeFilterContainer" class="collapseBody filterContainer"></div>
+            </div>
+            <div class="col" style="flex-grow:1">
+                <div><label class="filterLabel" for="NodeSearch">Search nodes:</label></div>
+                <div class="nodeSearch"><input id="NodeSearch" type="text" /></div>
             </div>
         </div>
     </div>
     <div id="Chart"></div>
 
     <script type="text/javascript">
-        //- turn off bolding on node selection
-        //- update secret relationship color, other colors
-        //- figure out why edges gain arrows when changing filters
-
         function getSelectedEpisode() {
             return document.getElementById('episode').value;
         }
@@ -112,7 +122,7 @@
             });
         });
 
-        const chart = new EpisodicChartManager('Chart', getSelectedEpisode(), baseNodes, 'NodeFilterContainer', nodeTypes, baseEdges, 'EdgeFilterContainer', edgeTypes);
+        const chart = new EpisodicChartManager('Chart', getSelectedEpisode(), baseNodes, 'NodeFilterContainer', 'NodeSearch', nodeTypes, baseEdges, 'EdgeFilterContainer', edgeTypes);
 
         document.getElementById('episode').addEventListener('change', () => {
             chart.update(getSelectedEpisode());

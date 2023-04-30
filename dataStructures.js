@@ -70,7 +70,10 @@ class EpisodicDataSet {
     }
 
     getActiveFilterOptions() {
-        return Array.from(this.filterContainer.getElementsByTagName("input")).filter(element => element.checked).map(element => element.value);
+        let active = Array.from(this.filterContainer.getElementsByTagName("input")).filter(element => element.checked).map(element => element.value);
+        if (this.filterSet.filterOptions.every((v, i) => active.includes(i) || active.includes(i.toString())))
+            return [];
+        return active;
     }
 
     #includeWithActiveFilters(dataObject) {
@@ -79,7 +82,7 @@ class EpisodicDataSet {
             return false;
 
         const activeFilters = this.getActiveFilterOptions();
-        if (activeFilters.length > 0 && activeFilters.filter(v => dataObject.type == v).length == 0)
+        if (activeFilters.length > 0 && !activeFilters.some(v => dataObject.type == v))
             return false;
         return this.customFilterFunc(dataObject);
     }
@@ -95,6 +98,7 @@ class EpisodicDataSet {
             const checkbox = getSingleChildElementWithClass(filter, "filterCbx");
             checkbox.id = "input_" + option.codeName;
             checkbox.value = index;
+            checkbox.checked = true;
             checkbox.addEventListener('change', () => {
                 this.episodicChartManager.update(this.episodicChartManager.selectedEpisode);
             });
@@ -136,13 +140,16 @@ class EpisodicChartManager {
     edgeDataSet;
     chartOptions;
     network;
+    nodeSearchTextBox;
     selectedEpisode = -1;
     #selectedNodeId = '';
+    #nodeSearchText = '';
 
-    constructor(chartContainerId, initialEpisode, nodes, nodeFilterContainerId, nodeTypes, edges, edgeFilterContainerId, edgeTypes) {
+    constructor(chartContainerId, initialEpisode, nodes, nodeFilterContainerId, nodeSearchId, nodeTypes, edges, edgeFilterContainerId, edgeTypes) {
         this.chartContainer = document.getElementById(chartContainerId);
         this.nodeDataSet = new EpisodicDataSet(this, nodes, nodeFilterContainerId, nodeTypes);
         this.edgeDataSet = new EpisodicDataSet(this, edges, edgeFilterContainerId, edgeTypes);
+        this.nodeSearchTextBox = document.getElementById(nodeSearchId);
 
         const manager = this;
         this.nodeDataSet.dataObjectTransformFunc = function (node, episode) { return manager.#transformNodeForEpisode(node, episode); };
@@ -158,11 +165,13 @@ class EpisodicChartManager {
                 shape: "image",
                 color: { background: "white" },
                 font: { strokeWidth: 1, background: "white" },
-                shapeProperties: { useBorderWithImage: true }
+                shapeProperties: { useBorderWithImage: true },
+                labelHighlightBold: false,
             },
             edges: {
                 color: "black",
-                font: { align: "top" }
+                font: { align: "top" },
+                labelHighlightBold: false
             },
             physics: {
                 solver: "forceAtlas2Based",
@@ -183,12 +192,29 @@ class EpisodicChartManager {
 
         this.network.addEventListener('selectNode', e => {
             manager.#selectedNodeId = e.nodes[0];
+
+            //selecting a node clears the active search
+            manager.nodeSearchTextBox.value = '';
+            manager.#nodeSearchText = '';
+
             manager.#refreshDataViews();
         });
 
         this.network.addEventListener('deselectNode', e => {
             manager.#selectedNodeId = '';
             manager.#refreshDataViews();
+        });
+
+        let nodeSearchTimeout = null;
+        this.nodeSearchTextBox.addEventListener('input', () => {
+            if (nodeSearchTimeout != null)
+                clearTimeout(nodeSearchTimeout);
+
+            nodeSearchTimeout = setTimeout(() => {
+                console.log('searching');
+                this.#nodeSearchText = this.nodeSearchTextBox.value;
+                this.#refreshDataViews();
+            }, 500);
         });
     }
 
@@ -242,8 +268,13 @@ class EpisodicChartManager {
             edge.font.color = color;
         }
 
-        if (edge.hasOwnProperty("_arrows"))
-            edge.arrows = EpisodicDataSet.getEpisodicPropertyOfDataObject(edge, "_arrows", episode);
+        if (edge.hasOwnProperty("_arrows")) {
+            const arrows = EpisodicDataSet.getEpisodicPropertyOfDataObject(edge, "_arrows", episode);
+            if (arrows != null)
+                edge.arrows = arrows;
+            else
+                delete edge.arrows;
+        }
 
         return edge;
     }
@@ -255,6 +286,11 @@ class EpisodicChartManager {
                     filter: edge => EpisodicDataSet.isWithinEpisodeRange(edge, this.selectedEpisode) &&
                         ((edge.to == this.#selectedNodeId && edge.from == node.id) || (edge.from == this.#selectedNodeId && edge.to == node.id))
                 }).length == 0)
+                return false;
+        }
+
+        if (this.#nodeSearchText != '') {
+            if (!node.label.toLowerCase().includes(this.#nodeSearchText.toLowerCase()))
                 return false;
         }
 
@@ -283,9 +319,7 @@ class EpisodicChartManager {
 }
 
 function getSingleChildElementWithClass(parentElement, className) {
-    var found = Array.from(parentElement.children).filter(el => {
+    return Array.from(parentElement.children).find(el => {
         return el.classList.contains(className);
     });
-    if (found.length == 1)
-        return found[0];
 }
