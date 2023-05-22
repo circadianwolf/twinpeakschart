@@ -96,7 +96,7 @@ const baseNodes = [
     { id: "major_briggs", label: "Major Briggs", image: "major_briggs", type: NODE_TYPES.PERSON },
     {
         id: "catherine_martell", label: "Catherine Martell\n(née Packard)", type: NODE_TYPES.PERSON,
-        images: { 1: "catherine_martell", "2_only": "catherine_martell_1x02" }
+        images: { 1: "catherine_martell", "2_only": "catherine_martell_1x02", "6_only": "catherine_martell_1x06" }
     },
     { id: "josie_packard", label: "Josie Packard", image: "josie_packard", type: NODE_TYPES.PERSON },
     { id: "doc_hayward", label: "Doc Hayward", image: "doc_hayward", type: NODE_TYPES.PERSON },
@@ -114,7 +114,7 @@ const baseNodes = [
     { id: "great_northern", label: "Great Northern hotel", image: "great_northern", type: NODE_TYPES.PLACE },
     {
         id: "dale_cooper", label: "Special Agent\nDale Cooper", type: NODE_TYPES.PERSON,
-        images: { 1: "dale_cooper_pilot", 2: "dale_cooper_1x02", 3: "dale_cooper_1x03", 4: "dale_cooper_1x04", 5: "dale_cooper_1x05" }
+        images: { 1: "dale_cooper_pilot", 2: "dale_cooper_1x02", 3: "dale_cooper_1x03", 4: "dale_cooper_1x04", 5: "dale_cooper_1x05", 6: "dale_cooper_1x06" }
     },
     { id: "diane", label: "Diane", type: NODE_TYPES.PERSON },
     { id: "harry_truman", label: "Sheriff Harry Truman", type: NODE_TYPES.PERSON, image: "sheriff_truman" },
@@ -157,7 +157,8 @@ const baseNodes = [
     },
     { id: "hornes_department_store", type: NODE_TYPES.PLACE, episode: 2, label: "Horne's\ndepartment store\n(perfume counter)" },
     {
-        id: "log_lady", label: "Log Lady", type: NODE_TYPES.PERSON, episode: "2",
+        id: "log_lady", type: NODE_TYPES.PERSON, episode: "2",
+        labels: { 2: "Log Lady", 6: "Margaret\nthe Log Lady" },
         images: { 2: "log_lady", "4_only": "log_lady_1x04" }
     },
     { id: "horne_conspiracy", label: "Conspiracy", type: NODE_TYPES.CONCEPT, episode: 2 },
@@ -199,10 +200,19 @@ const baseNodes = [
     { id: "timber_falls", label: "Timber Falls Motel", image: "timber_falls", type: NODE_TYPES.PLACE, episode: 5 },
     { id: "bob_lydecker", label: "Bob Lydecker", type: NODE_TYPES.PERSON, episode: 5 },
     { id: "lydecker_clinic", label: "Lydecker\nVeterinary Clinic", image: "lydecker_clinic", type: NODE_TYPES.PLACE, episode: 5 },
-    { id: "waldo", label: "Waldo\nthe myna bird", type: NODE_TYPES.OBJECT, episode: 5 },
+    { id: "waldo", label: "Waldo\nthe myna bird", type: NODE_TYPES.OBJECT, episode: 5, images: { 6: "waldo_1x06" } },
     { id: "big_eds_gas_farm", label: "Big Ed's Gas Farm", type: NODE_TYPES.PLACE, image: "big_eds_gas_farm" },
     { id: "rr_diner", label: "Double-R Diner", image: "rr_diner", type: NODE_TYPES.PLACE },
-    { id: "roadhouse", label: "The Roadhouse", image: "roadhouse", type: NODE_TYPES.PLACE, episode: 2 }
+    { id: "roadhouse", label: "The Roadhouse", image: "roadhouse", type: NODE_TYPES.PLACE, episode: 2 },
+    { id: "emory_batiss", label: "Emory Batiss", image: "emory_batiss", type: NODE_TYPES.PERSON, episode: 6 },
+    { id: "jacques_cabin", label: "Jacques' Cabin", image: "jacques_cabin", type: NODE_TYPES.PLACE, episode: 6 },
+    { id: "poker_chip", label: "Broken Poker Chip", image: "casino_chip", type: NODE_TYPES.OBJECT, episode: 6 },
+    { id: "red_drapes_ad", label: "Flesh World\n'red drapes' ad", image: "red_drapes_ad", type: NODE_TYPES.CONCEPT, episode: 6 },
+    { id: "teen_investigators", label: "Teen Murder\nInvestigation Team", type: NODE_TYPES.CONCEPT, episode: 6 },
+    { id: "owls", label: "Owls", type: NODE_TYPES.CONCEPT, episode: 6 },
+    { id: "cabin_party", label: "Cabin party?", type: NODE_TYPES.CONCEPT, episode: 6 },
+    { id: "third_man", label: "Third man?", type: NODE_TYPES.PERSON, episode: 6 },
+    { id: "lauras_hidden_tape", label: "Hidden tape", image: "lauras_hidden_tape", type: NODE_TYPES.OBJECT, episode: 6 }
 ];
 
 const baseEdges = [
@@ -270,7 +280,7 @@ const baseEdges = [
     { from: "laura_safe_deposit_box", to: "ten_thousand_cash", label: "Held", type: EDGE_TYPES.EVIDENCE, arrows: "to" },
     { from: "laura_safe_deposit_box", to: "flesh_world", label: "Held", type: EDGE_TYPES.EVIDENCE, arrows: "to" },
     { from: "flesh_world", to: "ronette_pulaski", label: "Features", type: EDGE_TYPES.EVIDENCE, arrows: "to" },
-    { from: "flesh_world", to: "leo_johnson", label: "Features the truck of?", type: EDGE_TYPES.UNCERTAIN, arrows: "to" },
+    { from: "flesh_world", to: "leo_johnson", label: "Features the truck of", type: EDGE_TYPES.EVIDENCE, arrows: "to" },
     { from: "train_car", to: "ronette_pulaski", label: "Escaped from", type: EDGE_TYPES.CRIME, arrows: "from" },
     { from: "laura_killer", to: "ronette_pulaski", label: "Attempted murder?", type: EDGE_TYPES.CRIME, arrows: "to" },
     { from: "laura_killer", to: "teresa_banks", label: "Murdered?", type: EDGE_TYPES.CRIME, arrows: "to" },
@@ -327,13 +337,18 @@ const baseEdges = [
     { from: "sarah_palmer", to: "bob", label: "Hallucinated?", type: EDGE_TYPES.DREAM, arrows: "to", episode: 2 },
     { from: "benjamin_horne", to: "hornes_department_store", label: "Owns", type: EDGE_TYPES.BUSINESS, arrows: "to", episode: 2 },
     { from: "ronette_pulaski", to: "hornes_department_store", label: "Formerly\nworked at", type: EDGE_TYPES.BUSINESS, arrows: "to", episode: 2 },
-    { from: "laura_palmer", to: "log_lady", label: "Says her log\nsaw something\nnight of murder", type: EDGE_TYPES.UNCERTAIN, arrows: "from", episode: 2 },
+    { from: "laura_palmer", to: "log_lady", label: "Says her log\nsaw something\nnight of murder", type: EDGE_TYPES.UNCERTAIN, arrows: "from", episode: 2, last_episode: 5 },
     { from: "catherine_martell", to: "benjamin_horne", label: "Secret Relationship", type: EDGE_TYPES.SECRET_RELATIONSHIP, episode: 2 },
     { from: "benjamin_horne", to: "horne_conspiracy", label: "Mastermind", arrows: "to", type: EDGE_TYPES.CRIME, episode: 2 },
-    { from: "catherine_martell", to: "horne_conspiracy", label: "Co-conspirator", arrows: "to", type: EDGE_TYPES.CRIME, episode: 2 },
     {
-        from: "horne_conspiracy", to: "josie_packard", arrows: "to", type: EDGE_TYPES.CRIME, episode: 2,
-        labels: { 2: "To force out", 5: "To frame\n& force out" }
+        from: "catherine_martell", to: "horne_conspiracy", type: EDGE_TYPES.CRIME, episode: 2,
+        labels: { 2: "Co-conspirator", 6: "Unwitting target of" },
+        _arrows: { 2: "to", 6: "from" },
+    },
+    {
+        from: "horne_conspiracy", to: "josie_packard", type: EDGE_TYPES.CRIME, episode: 2,
+        _arrows: { 2: "to", 6: "from" },
+        labels: { 2: "To force out", 5: "To frame\n& force out", 6: "Co-conspirator" }
     },
     { from: "laura_palmer", to: "benjamin_horne", label: "'Sang for'??", arrows: "from", type: EDGE_TYPES.UNCERTAIN, episode: 3 },
     { from: "benjamin_horne", to: "jerry_horne", label: "Siblings", type: EDGE_TYPES.FAMILY, episode: 3 },
@@ -362,7 +377,7 @@ const baseEdges = [
     { from: "jack_one_eye_note", to: "one_eyed_jacks", label: "Points at", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 3 },
     { from: "audrey_horne", to: "jack_one_eye_note", label: "Left", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 4 },
     { from: "laura_palmer", to: "hornes_department_store", label: "Worked at", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 4 },
-    { from: "dr_jacoby", to: "johnny_horne", label: "Treats", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 4 },
+    { from: "dr_jacoby", to: "johnny_horne", label: "Patient of", arrows: "from", type: EDGE_TYPES.BUSINESS, episode: 4 },
     { from: "harry_truman", to: "bookhouse_boys", label: "Leader?", arrows: "to", type: EDGE_TYPES.CRIME, episode: 4 },
     { from: "ed_hurley", to: "bookhouse_boys", label: "Member", arrows: "to", type: EDGE_TYPES.CRIME, episode: 4 },
     { from: "james_hurley", to: "bookhouse_boys", label: "Member", arrows: "to", type: EDGE_TYPES.CRIME, episode: 4 },
@@ -422,5 +437,39 @@ const baseEdges = [
     { from: "pete_martell", to: "josie_packard", label: "Fishing contest\npartners", type: EDGE_TYPES.FRIENDS, episode: 5 },
     { from: "hank_jennings", to: "josie_packard", label: "Domino??", type: EDGE_TYPES.UNCERTAIN, episode: 5 },
     { from: "bobby_briggs", to: "leos_bloody_shirt", label: "Given to", arrows: "from", type: EDGE_TYPES.CRIME, episode: 5 },
-    { from: "leos_bloody_shirt", to: "jacques_renault", label: "Planted at home of", arrows: "to", type: EDGE_TYPES.CRIME, episode: 5 }
+    { from: "leos_bloody_shirt", to: "jacques_renault", label: "Planted at home of", arrows: "to", type: EDGE_TYPES.CRIME, episode: 5 },
+    { from: "leos_bloody_shirt", to: "laura_palmer", label: "Does NOT match blood of", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 6 },
+    { from: "flesh_world", to: "jacques_renault", label: "Found in the home of", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 6 },
+    { from: "jacques_renault", to: "ronette_pulaski", label: "Managed the\nFlesh World ad for", arrows: "to", type: EDGE_TYPES.CRIME, episode: 6 },
+    { from: "emory_batiss", to: "hornes_department_store", label: "Perfume Counter Manager", arrows: "from", type: EDGE_TYPES.BUSINESS, episode: 6 },
+    { from: "jacques_renault", to: "jacques_cabin", label: "Owned", arrows: "to", type: EDGE_TYPES.OTHER, episode: 6 },
+    { from: "jacques_cabin", to: "red_room", label: "Red drapes...?", type: EDGE_TYPES.UNCERTAIN, episode: 6 },
+    { from: "jacques_cabin", to: "dwarf_cousin", label: "'There's always\nmusic in the air'?", type: EDGE_TYPES.UNCERTAIN, episode: 6 },
+    { from: "waldo", to: "jacques_cabin", label: "Found at", arrows: "to", type: EDGE_TYPES.OTHER, episode: 6 },
+    { from: "poker_chip", to: "jacques_cabin", label: "Found at", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 6 },
+    { from: "plastic_fragment_j", to: "poker_chip", label: "Matches", type: EDGE_TYPES.EVIDENCE, episode: 6 },
+    { from: "flesh_world", to: "red_drapes_ad", label: "Included", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 6 },
+    { from: "jacques_renault", to: "red_drapes_ad", label: "Managed", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 6 },
+    { from: "red_drapes_ad", to: "jacques_cabin", label: "Taken at", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 6 },
+    { from: "laura_palmer", to: "red_drapes_ad", label: "Featured in?", arrows: "to", type: EDGE_TYPES.UNCERTAIN, episode: 6 },
+    { from: "donna_hayward", to: "teen_investigators", label: "Member of", arrows: "to", type: EDGE_TYPES.OTHER, episode: 6 },
+    { from: "james_hurley", to: "teen_investigators", label: "Member of", arrows: "to", type: EDGE_TYPES.OTHER, episode: 6 },
+    { from: "madeleine_ferguson", to: "teen_investigators", label: "Member of", arrows: "to", type: EDGE_TYPES.OTHER, episode: 6 },
+    { from: "bobby_briggs", to: "dr_jacoby", label: "Patient of", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 6 },
+    { from: "major_briggs", to: "dr_jacoby", label: "Patient of", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 6 },
+    { from: "bett_briggs", to: "dr_jacoby", label: "Patient of", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 6 },
+    { from: "log_lady", to: "owls", label: "'The owls won't see us here'", type: EDGE_TYPES.UNCERTAIN, episode: 6 },
+    { from: "log_lady", to: "cabin_party", label: "Says her log observed", type: EDGE_TYPES.EVIDENCE, episode: 6 },
+    { from: "laura_palmer", to: "cabin_party", label: "Attended", type: EDGE_TYPES.CRIME, episode: 6 },
+    { from: "ronette_pulaski", to: "cabin_party", arrows: "to", label: "Attended", type: EDGE_TYPES.CRIME, episode: 6 },
+    { from: "jacques_renault", to: "cabin_party", arrows: "to", label: "Attended", type: EDGE_TYPES.CRIME, episode: 6 },
+    { from: "leo_johnson", to: "cabin_party", arrows: "to", label: "Attended", type: EDGE_TYPES.CRIME, episode: 6 },
+    { from: "cabin_party", to: "jacques_cabin", arrows: "to", label: "Occured at", type: EDGE_TYPES.CRIME, episode: 6 },
+    { from: "third_man", to: "cabin_party", arrows: "to", label: "Visited?", type: EDGE_TYPES.UNCERTAIN, episode: 6 },
+    { from: "owls", to: "cabin_party", label: "'The owls were silent'", type: EDGE_TYPES.UNCERTAIN, episode: 6 },
+    { from: "audrey_horne", to: "horne_conspiracy", arrows: "to", label: "Aware of", type: EDGE_TYPES.OTHER, episode: 6 },
+    { from: "shelly_johnson", to: "leo_johnson", label: "Shot", type: EDGE_TYPES.CRIME, arrows: "to", episode: 6 },
+    { from: "madeleine_ferguson", to: "lauras_hidden_tape", label: "Found", type: EDGE_TYPES.OTHER, arrows: "to", episode: 6 },
+    { from: "laura_palmer", to: "lauras_hidden_tape", label: "Made & hid", type: EDGE_TYPES.OTHER, arrows: "to", episode: 6 },
+    { from: "log_lady", to: "fire_walk_with_me", label: "'Fire is the devil hiding\nlike a coward in the smoke'", type: EDGE_TYPES.UNCERTAIN, episode: 6 }
 ];
