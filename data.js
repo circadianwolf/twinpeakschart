@@ -454,6 +454,7 @@ const baseEdges = [
     { from: "laura_palmer", to: "red_drapes_ad", label: "Featured in?", arrows: "to", type: EDGE_TYPES.UNCERTAIN, episode: 6 },
     { from: "donna_hayward", to: "teen_investigators", label: "Member of", arrows: "to", type: EDGE_TYPES.OTHER, episode: 6 },
     { from: "james_hurley", to: "teen_investigators", label: "Member of", arrows: "to", type: EDGE_TYPES.OTHER, episode: 6 },
+    { from: "teen_investigators", to: "laura_palmer", label: "Investigating\nmurder of", arrows: "to", type: EDGE_TYPES.OTHER, episode: 6 },
     { from: "madeleine_ferguson", to: "teen_investigators", label: "Member of", arrows: "to", type: EDGE_TYPES.OTHER, episode: 6 },
     { from: "bobby_briggs", to: "dr_jacoby", label: "Patient of", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 6 },
     { from: "major_briggs", to: "dr_jacoby", label: "Patient of", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 6 },
