@@ -62,6 +62,11 @@
             padding-right: 15px;
         }
 
+        .episodeOnlyLabel {
+            padding:5px;
+            vertical-align:bottom;
+        }
+
         .episodeList, .nodeSearch {
             padding-top:5px;
         }
@@ -87,7 +92,11 @@
                         <option value="6">1x06 "Cooper's Dreams"</option>
                         <option value="7">1x07 "Realization Time"</option>
                         <option value="8">1x08 "The Last Evening"</option>
+                        <option value="9">2x01 "May the Giant Be with You"</option>
                     </select>
+                </div>
+                <div>
+                    <input id="episode_only" type="checkbox" /><label class="episodeOnlyLabel" for="episode_only">Only this episode</label>
                 </div>
             </div>
             <div class="col" style="flex-grow:1">
@@ -110,6 +119,9 @@
         function getSelectedEpisode() {
             return document.getElementById('episode').value;
         }
+        function getOnlySelectedEpisode() {
+            return document.getElementById('episode_only').checked;
+        }
 
         Array.from(document.getElementsByClassName('collapseHeader')).forEach(el => {
             var arrow = getSingleChildElementWithClass(el, "arrow");
@@ -128,7 +140,10 @@
         const chart = new EpisodicChartManager('Chart', getSelectedEpisode(), baseNodes, 'NodeFilterContainer', 'NodeSearch', nodeTypes, baseEdges, 'EdgeFilterContainer', edgeTypes);
 
         document.getElementById('episode').addEventListener('change', () => {
-            chart.update(getSelectedEpisode());
+            chart.update(getSelectedEpisode(), getOnlySelectedEpisode());
+        });
+        document.getElementById('episode_only').addEventListener('change', () => {
+            chart.update(getSelectedEpisode(), getOnlySelectedEpisode());
         });
     </script>
 </body>

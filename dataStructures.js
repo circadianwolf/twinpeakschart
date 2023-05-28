@@ -142,6 +142,7 @@ class EpisodicChartManager {
     network;
     nodeSearchTextBox;
     selectedEpisode = -1;
+    #onlySelectedEpisode = false;
     #selectedNodeId = '';
     #nodeSearchText = '';
 
@@ -217,12 +218,13 @@ class EpisodicChartManager {
         });
     }
 
-    update(episode) {
+    update(episode, onlySelectedEpisode) {
         if (this.selectedEpisode != episode) {
             this.selectedEpisode = episode;
             this.nodeDataSet.updateDataObjectsForEpisode(episode);
             this.edgeDataSet.updateDataObjectsForEpisode(episode);
         }
+        this.#onlySelectedEpisode = onlySelectedEpisode;
 
         this.#refreshDataViews();
     }
@@ -288,6 +290,20 @@ class EpisodicChartManager {
                 return false;
         }
 
+        if (this.#onlySelectedEpisode) {
+            let inThisEpisode = false;
+            if (EpisodicChartManager.#hadEpisodeUpdate(node, this.selectedEpisode)) {
+                inThisEpisode = true;
+            }
+            else if (this.edgeDataSet.dataSet.get({
+                filter: edge => (edge.to == node.id || edge.from == node.id) && EpisodicChartManager.#hadEpisodeUpdate(edge, this.selectedEpisode)
+            }).length > 0)
+                inThisEpisode = true;
+
+            if (!inThisEpisode)
+                return false;
+        }
+
         if (this.#nodeSearchText != '') {
             if (!node.label.toLowerCase().includes(this.#nodeSearchText.toLowerCase()))
                 return false;
@@ -308,12 +324,31 @@ class EpisodicChartManager {
     }
 
     #customEdgeFilter(edge) {
-        if (this.#selectedNodeId == '')
+        if (!this.#onlySelectedEpisode && this.#selectedNodeId == '')
             return true;
-        if (edge.to == this.#selectedNodeId || edge.from == this.#selectedNodeId)
+        if (this.#onlySelectedEpisode && !EpisodicChartManager.#hadEpisodeUpdate(edge, this.selectedEpisode))
+            return false;
+        if (this.#selectedNodeId != '' && edge.to != this.#selectedNodeId && edge.from != this.#selectedNodeId)
+            return false;
+
+        return true;
+    }
+
+    static #hadEpisodeUpdate(dataObject, episode) {
+        if (episode == 1)
             return true;
 
-        return false;
+        if (dataObject.hasOwnProperty("episode") && dataObject.episode == episode)
+            return true;
+
+        const episodicProperties = ["images", "labels", "types", "_arrows"];
+        return episodicProperties.some(prop => didPropertyChange(prop));
+
+        function didPropertyChange(propertyName) {
+            if (!dataObject.hasOwnProperty(propertyName))
+                return false;
+            return dataObject[propertyName].hasOwnProperty(episode);
+        }
     }
 }
 
