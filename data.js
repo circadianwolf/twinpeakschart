@@ -36,7 +36,7 @@ const baseNodes = [
     },
     {
         id: "donna_hayward", label: "Donna Hayward", type: NODE_TYPES.PERSON,
-        images: { 1: "donna_hayward", 2: "donna_hayward_1x02", "4_only": "donna_hayward_1x04", 8: "donna_hayward_1x08", 9: "donna_hayward_2x01" }
+        images: { 1: "donna_hayward", 2: "donna_hayward_1x02", "4_only": "donna_hayward_1x04", 8: "donna_hayward_1x08", 9: "donna_hayward_2x01", 10: "donna_hayward_2x02" }
     },
     {
         id: "james_hurley", label: "James Hurley", type: NODE_TYPES.PERSON,
@@ -136,7 +136,7 @@ const baseNodes = [
         id: "dale_cooper", label: "Special Agent\nDale Cooper", type: NODE_TYPES.PERSON,
         images: {
             1: "dale_cooper_pilot", 2: "dale_cooper_1x02", 3: "dale_cooper_1x03", 4: "dale_cooper_1x04", 5: "dale_cooper_1x05", 6: "dale_cooper_1x06", 7: "dale_cooper_1x07",
-            8: "dale_cooper_1x08", 9: "dale_cooper_2x01"
+            8: "dale_cooper_1x08", 9: "dale_cooper_2x01", 10: "dale_cooper_2x02"
         }
     },
     { id: "diane", label: "Diane", type: NODE_TYPES.PERSON },
@@ -715,6 +715,7 @@ const baseEdges = [
     { from: "windom_earle", to: "dale_cooper", label: "Former partners", type: EDGE_TYPES.BUSINESS, episode: 10 },
     { from: "albert_rosenfield", to: "windom_earle", label: "Searching for", arrows: "to", type: EDGE_TYPES.OTHER, episode: 10 },
     { from: "hong_kong_man", to: "dale_cooper", label: "Watching", arrows: "to", type: EDGE_TYPES.UNCERTAIN, episode: 10 },
+    { from: "donna_hayward", to: "meals_on_wheels", label: "Volunteers for", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 10 },
     { from: "mrs_tremond", to: "meals_on_wheels", label: "Serves", arrows: "from", type: EDGE_TYPES.OTHER, episode: 10 },
     { from: "mrs_tremond", to: "mrs_tremond_grandson", label: "Grandparent/Grandchild", type: EDGE_TYPES.FAMILY, episode: 10 },
     { from: "mrs_tremond", to: "harold_smith", label: "Neighbor", type: EDGE_TYPES.OTHER, episode: 10 },
@@ -730,8 +731,8 @@ const baseEdges = [
     { from: "laura_palmer", to: "one_eyed_jacks", label: "Worked at for\none weekend", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 10 },
     { from: "major_briggs", to: "deep_space_monitors", label: "Maintains", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 10 },
     { from: "deep_space_monitors", to: "owls", label: "Transmitted when\nCooper was shot", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 10 },
-    { from: "harold_smith", to: "donna_hayward", label: "Arranges to meet", arrows: "to", type: EDGE_TYPES.OTHER, episode: 10 },
+    { from: "harold_smith", to: "donna_hayward", label: "Arranged to meet", arrows: "to", type: EDGE_TYPES.OTHER, episode: 10 },
     { from: "madeleine_ferugson", to: "bob", label: "Hallucinated?", arrows: "to", type: EDGE_TYPES.DREAM, episode: 10 },
-    { from: "bob", to: "owls", label: "???", type: EDGE_TYPES.DREAM, episode: 10 },
+    { from: "bob", to: "owls", label: "Cooper's dream?", type: EDGE_TYPES.DREAM, episode: 10 },
     { from: "blackie", to: "audrey_horne", label: "Kidnapped", arrows: "to", type: EDGE_TYPES.CRIME, episode: 10 },
 ];
