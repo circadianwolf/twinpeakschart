@@ -845,7 +845,7 @@ const baseEdges = [
         from: "harold_smith", to: "donna_hayward", arrows: "to", type: EDGE_TYPES.OTHER, episode: 10,
         labels: { 10: "Arranged to meet", 11: "Met" }
     },
-    { from: "madeleine_ferugson", to: "bob", label: "Hallucinated?", arrows: "to", type: EDGE_TYPES.DREAM, episode: 10 },
+    { from: "madeleine_ferguson", to: "bob", label: "Hallucinated?", arrows: "to", type: EDGE_TYPES.DREAM, episode: 10 },
     { from: "bob", to: "owls", label: "Cooper's dream?", type: EDGE_TYPES.DREAM, episode: 10 },
     { from: "audrey_kidnapping", to: "audrey_horne", label: "Victim", arrows: "to", type: EDGE_TYPES.CRIME, episode: 10 },
     { from: "blackie", to: "audrey_kidnapping", label: "Conspirator", arrows: "to", type: EDGE_TYPES.CRIME, episode: 10 },
