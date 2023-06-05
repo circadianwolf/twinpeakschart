@@ -151,12 +151,18 @@ const baseNodes = [
         id: "dale_cooper", label: "Special Agent\nDale Cooper", type: NODE_TYPES.PERSON,
         images: {
             1: "dale_cooper_pilot", 2: "dale_cooper_1x02", 3: "dale_cooper_1x03", 4: "dale_cooper_1x04", 5: "dale_cooper_1x05", 6: "dale_cooper_1x06", 7: "dale_cooper_1x07",
-            8: "dale_cooper_1x08", 9: "dale_cooper_2x01", 10: "dale_cooper_2x02", 11: "dale_cooper_2x03",
+            8: "dale_cooper_1x08", 9: "dale_cooper_2x01", 10: "dale_cooper_2x02", 11: "dale_cooper_2x03", 13: "dale_cooper_2x05",
         }
     },
     { id: "diane", label: "Diane", type: NODE_TYPES.PERSON },
-    { id: "harry_truman", label: "Sheriff Harry Truman", type: NODE_TYPES.PERSON, image: "sheriff_truman" },
-    { id: "deputy_hawk", label: "Deputy Hawk", type: NODE_TYPES.PERSON, image: "deputy_hawk" },
+    {
+        id: "harry_truman", label: "Sheriff Harry Truman", type: NODE_TYPES.PERSON,
+        images: { 1: "sheriff_truman", "13_only": "sheriff_truman_2x05" },
+    },
+    {
+        id: "deputy_hawk", label: "Deputy Hawk", type: NODE_TYPES.PERSON,
+        images: { 1: "deputy_hawk", "13_only": "deputy_hawk_2x05" },
+    },
     {
         id: "deputy_andy", label: "Deputy Andy", type: NODE_TYPES.PERSON,
         images: { 1: "deputy_andy", 8: "deputy_andy_1x08" }
@@ -186,6 +192,8 @@ const baseNodes = [
     },
     { id: "big_eds_gas_farm", label: "Big Ed's Gas Farm", type: NODE_TYPES.PLACE, image: "big_eds_gas_farm" },
     { id: "rr_diner", label: "Double-R Diner", image: "rr_diner", type: NODE_TYPES.PLACE },
+    { id: "ghostwood_development", label: "Ghostwood Country Club & Estates", image: "ghostwood_development", type: NODE_TYPES.CONCEPT },
+    { id: "norwegian_investors", label: "Norwegians", image: "norwegians", type: NODE_TYPES.PERSON },
     //#endregion
     //#region Episode 2
     {
@@ -225,7 +233,11 @@ const baseNodes = [
         images: { 3: "jerry_horne", 9: "jerry_horne_2x01" }
     },
     { id: "one_eyed_jacks", label: "One Eyed Jack's\ncasino & brothel", image: "one_eyed_jacks", type: NODE_TYPES.PLACE, episode: 3 },
-    { id: "blackie", type: NODE_TYPES.PERSON, label: "Blackie", image: "blackie", episode: 3 },
+    {
+        id: "blackie", type: NODE_TYPES.PERSON, episode: 3,
+        labels: { 3: "Blackie", 13: "Blackie\n(deceased)" },
+        images: { 3: "blackie", 13: "blackie_2x05" },
+    },
     { id: "jacks_new_girl", label: "New Girl", image: "new_girl", type: NODE_TYPES.PERSON, episode: 3 },
     { id: "bloody_rag", label: "Bloody rag", image: "bloody_rag", type: NODE_TYPES.OBJECT, episode: 3 },
     { id: "mike", type: NODE_TYPES.PERSON, episode: 3, label: "Mike?", image: "mike" },
@@ -288,7 +300,7 @@ const baseNodes = [
     { id: "teen_investigators", label: "Teen Murder\nInvestigation Team", type: NODE_TYPES.CONCEPT, episode: 6 },
     {
         id: "owls", type: NODE_TYPES.CONCEPT, episode: 6,
-        images: { 6: "owl", 10: "owl_2x02" },
+        images: { 6: "owl", 10: "owl_2x02", 13: "owls_2x05", },
         labels: { 6: "Owls", 9: "'The owls are\nnot what they seem'" }
     },
     {
@@ -297,6 +309,7 @@ const baseNodes = [
     },
     { id: "third_man", label: "Third man?", type: NODE_TYPES.PERSON, episode: 6 },
     { id: "lauras_hidden_tape", label: "Hidden tape #2", image: "lauras_hidden_tape", type: NODE_TYPES.OBJECT, episode: 6 },
+    { id: "icelandic_investors", label: "Icelanders", image: "icelanders", type: NODE_TYPES.PERSON, episode: 6 },
     //#endregion
     //#region Episode 7
     {
@@ -346,7 +359,7 @@ const baseNodes = [
     { id: "mrs_tremond_grandson", label: "Magician\nin training", image: "mrs_tremond_grandson", type: NODE_TYPES.PERSON, episode: 10 },
     {
         id: "harold_smith", type: NODE_TYPES.PERSON, episode: 10,
-        images: { 10: "harold_smith", 11: "harold_smith_2x03" },
+        images: { 10: "harold_smith", 11: "harold_smith_2x03", 13: "harold_smith_2x05" },
         labels: { 10: "Mr. Smith", 11: "Harold Smith" }
     },
     { id: "mystery_caller", label: "Mystery caller?", type: NODE_TYPES.PERSON, episode: 10 },
@@ -376,6 +389,7 @@ const baseNodes = [
     { id: "sid", label: "Sid", image: "sid", type: NODE_TYPES.PERSON, episode: 12 },
     { id: "tojamura", label: "Mr. Tojamura", image: "tojamura", type: NODE_TYPES.PERSON, episode: 12 },
     { id: "eckhardt", label: "Mr. Eckhardt", type: NODE_TYPES.PERSON, episode: 12 },
+    { id: "audrey_rescue", label: "Rescue plot", type: NODE_TYPES.CONCEPT, episode: 12 },
     //#endregion
 ];
 
@@ -484,6 +498,10 @@ const baseEdges = [
     { from: "sylvia_horne", to: "benjamin_horne", label: "Married", type: EDGE_TYPES.PUBLIC_RELATIONSHIP },
     { from: "sylvia_horne", to: "audrey_horne", label: "Parent/Child", type: EDGE_TYPES.FAMILY },
     { from: "sylvia_horne", to: "johnny_horne", label: "Parent/Child", type: EDGE_TYPES.FAMILY },
+    { from: "benjamin_horne", to: "ghostwood_development", label: "Leading", arrows: "to", type: EDGE_TYPES.BUSINESS },
+    { from: "norwegian_investors", to: "ghostwood_development", label: "Abandoned\ninvestment in", arrows: "to", type: EDGE_TYPES.BUSINESS },
+    { from: "audrey_horne", to: "ghostwood_dvelopment", label: "Sabotaged", arrows: "to", type: EDGE_TYPES.CRIME },
+    { from: "ghostwood_development", to: "packard_sawmill", label: "Requires land from", arrows: "to", type: EDGE_TYPES.BUSINESS },
     //#endregion
     //#region Episode 2
     { from: "shelly_johnson", to: "leos_bloody_shirt", label: "Found and stashed", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 2 },
@@ -545,6 +563,7 @@ const baseEdges = [
         _arrows: { 2: "to", 6: "from" },
         labels: { 2: "To force out", 5: "To frame\n& force out", 6: "Co-conspirator/\nfalse target" }
     },
+    { from: "horne_conspiracy", to: "ghostwood_development", label: "To acquire\nland for", arrows: "to", type: EDGE_TYPES.CRIME, episode: 2 },
     //#endregion
     //#region Episode 3
     { from: "laura_palmer", to: "benjamin_horne", label: "'Sang for'??", arrows: "from", type: EDGE_TYPES.UNCERTAIN, episode: 3 },
@@ -684,7 +703,10 @@ const baseEdges = [
         types: { 6: EDGE_TYPES.UNCERTAIN, 8: EDGE_TYPES.EVIDENCE }, 
     },
     { from: "donna_hayward", to: "teen_investigators", label: "Member of", arrows: "to", type: EDGE_TYPES.OTHER, episode: 6 },
-    { from: "james_hurley", to: "teen_investigators", label: "Member of", arrows: "to", type: EDGE_TYPES.OTHER, episode: 6 },
+    {
+        from: "james_hurley", to: "teen_investigators", arrows: "to", type: EDGE_TYPES.OTHER, episode: 6,
+        labels: { 6: "Member of", 13: "Former member of?" },
+    },
     { from: "teen_investigators", to: "laura_palmer", label: "Investigating\nmurder of", arrows: "to", type: EDGE_TYPES.OTHER, episode: 6 },
     { from: "madeleine_ferguson", to: "teen_investigators", label: "Member of", arrows: "to", type: EDGE_TYPES.OTHER, episode: 6 },
     { from: "bobby_briggs", to: "dr_jacoby", label: "Patient of", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 6 },
@@ -704,6 +726,10 @@ const baseEdges = [
     { from: "madeleine_ferguson", to: "lauras_hidden_tape", label: "Found", type: EDGE_TYPES.EVIDENCE, arrows: "to", episode: 6 },
     { from: "laura_palmer", to: "lauras_hidden_tape", label: "Made & hid", type: EDGE_TYPES.EVIDENCE, arrows: "to", episode: 6 },
     { from: "log_lady", to: "fire_walk_with_me", label: "'Fire is the devil hiding\nlike a coward in the smoke'", type: EDGE_TYPES.UNCERTAIN, episode: 6 },
+    {
+        from: "icelandic_investors", to: "ghostwood_development", arrows: "from", type: EDGE_TYPES.BUSINESS, episode: 6,
+        labels: { 6: "Recruited\nfor investment", 8: "Signed\nas investors" },
+    },
     //#endregion
     //#region Episode 7
     { from: "jacques_renault", to: "one_eyed_jacks", label: "Works\nat the casino", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 7 },
@@ -842,8 +868,9 @@ const baseEdges = [
     { from: "major_briggs", to: "deep_space_monitors", label: "Maintains", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 10 },
     { from: "deep_space_monitors", to: "owls", label: "Transmitted when\nCooper was shot", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 10 },
     {
-        from: "harold_smith", to: "donna_hayward", arrows: "to", type: EDGE_TYPES.OTHER, episode: 10,
-        labels: { 10: "Arranged to meet", 11: "Met" }
+        from: "harold_smith", to: "donna_hayward", type: EDGE_TYPES.OTHER, episode: 10,
+        labels: { 10: "Arranged to meet", 11: "Met", 13: "Told details of her life to" },
+        _arrows: { 10: "to", 13: "from" },
     },
     { from: "madeleine_ferguson", to: "bob", label: "Hallucinated?", arrows: "to", type: EDGE_TYPES.DREAM, episode: 10 },
     { from: "bob", to: "owls", label: "Cooper's dream?", type: EDGE_TYPES.DREAM, episode: 10 },
@@ -876,10 +903,16 @@ const baseEdges = [
     { from: "jean_renault", to: "bernard_renault", label: "Siblings", type: EDGE_TYPES.FAMILY, episode: 11 },
     { from: "blackie", to: "nancy", label: "Siblings", type: EDGE_TYPES.FAMILY, episode: 11 },
     { from: "jean_renault", to: "dale_cooper", label: "Wants revenge on", arrows: "to", type: EDGE_TYPES.CRIME, episode: 11 },
-    { from: "jean_renault", to: "audrey_kidnapping", label: "Conspirator", arrows: "to", type: EDGE_TYPES.CRIME, episode: 11 },
+    {
+        from: "jean_renault", to: "audrey_kidnapping", arrows: "to", type: EDGE_TYPES.CRIME, episode: 11,
+        labels: { 11: "Conspirator", 12: "Leader" },
+    },
     { from: "nancy", to: "audrey_kidnapping", label: "Conspirator", arrows: "to", type: EDGE_TYPES.CRIME, episode: 11 },
     { from: "audrey_kidnapping", to: "benjamin_horne", label: "Ransom target", arrows: "to", type: EDGE_TYPES.CRIME, episode: 11 },
-    { from: "jean_renault", to: "nancy", label: "Together?", type: EDGE_TYPES.PUBLIC_RELATIONSHIP, episode: 11 },
+    {
+        from: "jean_renault", to: "nancy", type: EDGE_TYPES.PUBLIC_RELATIONSHIP, episode: 11,
+        labels: { 11: "Together?", 13: "Together" }
+    },
     { from: "one_armed_man", to: "gerards_needle", label: "Left by", arrows: "from", type: EDGE_TYPES.EVIDENCE, episode: 11 },
     { from: "gerards_needle", to: "without_chemicals_points", arrows: "from", label: "Connected to?", type: EDGE_TYPES.UNCERTAIN, episode: 11 },
     { from: "one_armed_man", to: "without_chemicals_points", arrows: "from", label: "Pointed at?", type: EDGE_TYPES.UNCERTAIN, episode: 11 },
@@ -904,12 +937,15 @@ const baseEdges = [
     { from: "andys_boots", to: "one_armed_man", arrows: "from", label: "Sold", type: EDGE_TYPES.EVIDENCE, episode: 12 },
     { from: "andys_boots", to: "leos_boots", label: "Matching brand", type: EDGE_TYPES.EVIDENCE, episode: 12 },
     { from: "leos_boots", to: "clue_leos_house", label: "Meant?", arrows: "from", type: EDGE_TYPES.UNCERTAIN, episode: 12 },
-    { from: "jean_renault", to: "benjamin_horne", label: "Delivered ransom\ndemand to", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
-    { from: "jean_renault", to: "one_eyed_jacks", label: "Wants control of", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
+    { from: "jean_renault", to: "benjamin_horne", label: "Delivered demands to", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
     { from: "great_northern", to: "mt_wentz", label: "Staff on the\nlookout for", arrows: "to", type: EDGE_TYPES.OTHER, episode: 12 },
     { from: "norma_jennings", to: "mt_wentz", label: "On the lookout for", arrows: "to", type: EDGE_TYPES.OTHER, episode: 12 },
-    { from: "audrey_kidnapping", to: "dale_cooper", label: "Asked to deliver\nransom money", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
-    { from: "dale_cooper", to: "bookhouse_boys", label: "Asked for help\nwith kidnapping", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
+    { from: "audrey_kidnapping", to: "dale_cooper", label: "Murder target", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
+    { from: "audrey_kidnapping", to: "one_eyed_jacks", label: "Wants to gain\ncontrol of", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
+    { from: "benjamin_horne", to: "audrey_rescue", label: "Co-leader", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
+    { from: "audrey_rescue", to: "audrey_kidnapping", label: "Intended to thwart", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
+    { from: "dale_cooper", to: "audrey_rescue", label: "Co-leader", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
+    { from: "audrey_rescue", to: "bookhouse_boys", label: "Asked for help", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
     { from: "jean_renault", to: "emory_batiss", label: "Murdered", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
     { from: "daryl_lodwick", to: "mt_wentz", label: "Mistaken for", arrows: "to", type: EDGE_TYPES.OTHER, episode: 12 },
     { from: "daryl_lodwick", to: "lodwick_badge", label: "Belongs to", arrows: "from", type: EDGE_TYPES.OTHER, episode: 12 },
@@ -922,6 +958,19 @@ const baseEdges = [
     { from: "josie_packard", to: "eckhardt", label: "???", type: EDGE_TYPES.UNCERTAIN, episode: 12 },
     { from: "hong_kong_man", to: "horne_conspiracy", label: "Secret party to?", type: EDGE_TYPES.CRIME, episode: 12 },
     { from: "hong_kong_man", to: "hank_jennings", label: "Attacked\n& threatened", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
-    { from: "harry_truman", to: "audrey_kidnapping", label: "Joined rescue plot", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
+    { from: "harry_truman", to: "audrey_rescue", label: "Participant", arrows: "to", type: EDGE_TYPES.CRIME, episode: 12 },
+    //#endregion
+    //#region Episode 13
+    { from: "mystery_note", to: "one_eyed_jacks", label: "Points at", arrows: "to", type: EDGE_TYPES.CRIME, episode: 13 },
+    { from: "hank_jennings", to: "audrey_rescue", label: "Secretly sent\nto follow", arrows: "to", type: EDGE_TYPES.CRIME, episode: 13 },
+    { from: "teen_investigators", to: "lauras_secret_diary", label: "Attempted to steal", arrows: "to", type: EDGE_TYPES.CRIME, episode: 13 },
+    { from: "owls", to: "one_eyed_jacks", label: "Owl seen outside", arrows: "to", type: EDGE_TYPES.OTHER, episode: 13 },
+    { from: "jean_renault", to: "blackie", label: "Murdered\n(with assassin wrist blade)", type: EDGE_TYPES.CRIME, episode: 13 },
+    { from: "audrey_horne", to: "audrey_rescue", label: "Succeeded in rescuing", arrows: "from", type: EDGE_TYPES.CRIME, episode: 13 },
+    { from: "deputy_hawk", to: "audrey_rescue", label: "Secretly followed\n& saved", arrows: "to", type: EDGE_TYPES.CRIME, episode: 13 },
+    { from: "jean_renault", to: "hank_jennings", label: "Took hostage", arrows: "to", type: EDGE_TYPES.CRIME, episode: 13 },
+    { from: "hank_jennings", to: "daryl_lodwick", label: "Mistaken for", arrows: "to", type: EDGE_TYPES.CRIME, episode: 13 },
+    { from: "tojamura", to: "ghostwood_development", label: "Bought out", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 13 },
+    { from: "tojamura", to: "benjamin_horne", label: "Paid $5,000,000 directly", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 13 },
     //#endregion
 ];
