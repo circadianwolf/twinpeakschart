@@ -34,7 +34,7 @@ const baseNodes = [
             "9_only": "laura_palmer_2x01",
             "11_only": "laura_palmer_gravestone",
         },
-        fixed: true
+        fixed: true, x: 0, y: 0
     },
     {
         id: "donna_hayward", label: "Donna Hayward", type: NODE_TYPES.PERSON,
@@ -500,7 +500,7 @@ const baseEdges = [
     { from: "sylvia_horne", to: "johnny_horne", label: "Parent/Child", type: EDGE_TYPES.FAMILY },
     { from: "benjamin_horne", to: "ghostwood_development", label: "Leading", arrows: "to", type: EDGE_TYPES.BUSINESS },
     { from: "norwegian_investors", to: "ghostwood_development", label: "Abandoned\ninvestment in", arrows: "to", type: EDGE_TYPES.BUSINESS },
-    { from: "audrey_horne", to: "ghostwood_dvelopment", label: "Sabotaged", arrows: "to", type: EDGE_TYPES.CRIME },
+    { from: "audrey_horne", to: "ghostwood_development", label: "Sabotaged", arrows: "to", type: EDGE_TYPES.CRIME },
     { from: "ghostwood_development", to: "packard_sawmill", label: "Requires land from", arrows: "to", type: EDGE_TYPES.BUSINESS },
     //#endregion
     //#region Episode 2
@@ -752,7 +752,7 @@ const baseEdges = [
     { from: "teen_investigators", to: "coconut_stash", label: "Found", arrows: "to", type: EDGE_TYPES.OTHER, episode: 8 },
     { from: "coconut_stash", to: "jacoby_tape", label: "Held", arrows: "to", type: EDGE_TYPES.OTHER, episode: 8 },
     { from: "teen_investigators", to: "jacoby_tape", label: "Took", arrows: "to", type: EDGE_TYPES.CRIME, episode: 8 },
-    { from: "teen_investigators", to: "james_heart_necklace", label: "Recovered", arrows: "to", type: EDGE_TYPES.OTHER, episode: 8 },
+    { from: "teen_investigators", to: "heart_necklace_james", label: "Recovered", arrows: "to", type: EDGE_TYPES.OTHER, episode: 8 },
     { from: "jacoby_attacker", to: "dr_jacoby", label: "Attacked", arrows: "to", type: EDGE_TYPES.CRIME, episode: 8 },
     { from: "waldo", to: "poker_chip", label: "Broke", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 8 },
     { from: "twine_fragments_2", to: "cabin_party", label: "Used at?", arrows: "to", type: EDGE_TYPES.UNCERTAIN, episode: 8 },
@@ -832,7 +832,12 @@ const baseEdges = [
     { from: "bloody_rag", to: "paper_scraps", label: "Found with", type: EDGE_TYPES.EVIDENCE, episode: 9 },
     { from: "bloody_rag", to: "laura_killer", label: "Blood of?", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 9 },
     { from: "bloody_rag", to: "fire_walk_with_me", label: "Same blood", type: EDGE_TYPES.EVIDENCE, episode: 9 },
-    { from: "hong_kong_man", to: "josie_packard", label: "Called for", type: EDGE_TYPES.OTHER, arrows: "to", episode: 9 },
+    {
+        from: "hong_kong_man", to: "josie_packard", episode: 9,
+        labels: { 9: "Called for", 12: "Cousins\n(supposedly)" },
+        types: { 9: EDGE_TYPES.OTHER, 12: EDGE_TYPES.FAMILY },
+        _arrows: { 9: "to", 12: null }
+    },
     { from: "leland_palmer", to: "doc_hayward", label: "Laywer for", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 9 },
     { from: "giant", to: "mystery_note", label: "'You forgot something'", type: EDGE_TYPES.DREAM, episode: 9 },
     { from: "giant", to: "third_man", label: "'One person saw the third man;\nthree have seen him,\nbut only one, his body'", type: EDGE_TYPES.DREAM, episode: 9 },
@@ -896,7 +901,7 @@ const baseEdges = [
     { from: "bob", to: "play_with_fire", label: "Said when Leland\nwas a child?", arrows: "to", type: EDGE_TYPES.EVIDENCE, episode: 11 },
     { from: "bob", to: "third_man", label: "Is suspected to be", type: EDGE_TYPES.CRIME, episode: 11 },
     { from: "bob", to: "laura_killer", label: "Is suspected to be", type: EDGE_TYPES.CRIME, episode: 11 },
-    { from: "ben_horne", to: "blackie", label: "Got hooked on heroin?", arrows: "to", type: EDGE_TYPES.CRIME, episode: 11 },
+    { from: "benjamin_horne", to: "blackie", label: "Got hooked on heroin?", arrows: "to", type: EDGE_TYPES.CRIME, episode: 11 },
     { from: "blackie", to: "audrey_horne", label: "Drugged with heroin?", arrows: "to", type: EDGE_TYPES.CRIME, episode: 11 },
     { from: "one_armed_man", to: "bob", label: "Reacts to sketch of", arrows: "to", type: EDGE_TYPES.OTHER, episode: 11 },
     { from: "jean_renault", to: "jacques_renault", label: "Siblings", type: EDGE_TYPES.FAMILY, episode: 11 },
@@ -953,7 +958,6 @@ const baseEdges = [
     { from: "sid", to: "clinton_sternwood", label: "Law clerk for", arrows: "to", type: EDGE_TYPES.BUSINESS, episode: 12 },
     { from: "tojamura", to: "great_northern", label: "Staying at", arrows: "to", type: EDGE_TYPES.OTHER, episode: 12 },
     { from: "tojamura", to: "mt_wentz", label: "Mistaken for", arrows: "to", type: EDGE_TYPES.OTHER, episode: 12 },
-    { from: "hong_kong_man", to: "josie_packard", label: "Cousins\n(supposedly)", type: EDGE_TYPES.FAMILY, episode: 12 },
     { from: "hong_kong_man", to: "eckhardt", label: "???", type: EDGE_TYPES.UNCERTAIN, episode: 12 },
     { from: "josie_packard", to: "eckhardt", label: "???", type: EDGE_TYPES.UNCERTAIN, episode: 12 },
     { from: "hong_kong_man", to: "horne_conspiracy", label: "Secret party to?", type: EDGE_TYPES.CRIME, episode: 12 },

@@ -24,21 +24,29 @@ class FilterSet {
         });
         return filterOptionsObject;
     }
+
+    isValidValue(value) {
+        if (!isFinite(value))
+            return false;
+        const numValue = Number(value);
+        return numValue >= 0 && numValue < this.filterOptions.length;
+    }
 }
 
 class EpisodicDataSet {
     static FilterTemplateId = 'FilterTemplate';
 
     episodicChartManager;
+    dataObjectDefinition;
     dataSet;
     dataView;
     filterContainer;
     filterSet;
-    dataObjectTransformFunc = function (dataObject) { return dataObject; };
     customFilterFunc = function (dataObject) { return true; };
 
-    constructor(manager, baseDataObjects, filterContainerId, filterSet) {
+    constructor(manager, dataObjectDefinition, baseDataObjects, filterContainerId, filterSet) {
         this.episodicChartManager = manager;
+        this.dataObjectDefinition = dataObjectDefinition;
         this.filterContainer = document.getElementById(filterContainerId);
         this.filterSet = filterSet;
 
@@ -55,16 +63,7 @@ class EpisodicDataSet {
         });
 
         const result = [];
-        inEpisode.forEach(dataObject => {
-            if (dataObject.hasOwnProperty("labels"))
-                dataObject.label = EpisodicDataSet.getEpisodicPropertyOfDataObject(dataObject, "labels", episode);
-            if (dataObject.hasOwnProperty("types"))
-                dataObject.type = EpisodicDataSet.getEpisodicPropertyOfDataObject(dataObject, "types", episode);
-
-            dataObject = this.dataObjectTransformFunc(dataObject, episode);
-
-            result.push(dataObject);
-        });
+        inEpisode.forEach(dataObject => result.push(this.dataObjectDefinition.transformForEpisode(dataObject, episode)));
 
         this.dataSet.update(result);
     }
@@ -84,6 +83,7 @@ class EpisodicDataSet {
         const activeFilters = this.getActiveFilterOptions();
         if (activeFilters.length > 0 && !activeFilters.some(v => dataObject.type == v))
             return false;
+
         return this.customFilterFunc(dataObject);
     }
 
@@ -100,7 +100,7 @@ class EpisodicDataSet {
             checkbox.value = index;
             checkbox.checked = true;
             checkbox.addEventListener('change', () => {
-                this.episodicChartManager.update(this.episodicChartManager.selectedEpisode);
+                this.episodicChartManager.update(this.episodicChartManager.selectedEpisode, this.episodicChartManager.onlySelectedEpisode);
             });
 
             const label = getSingleChildElementWithClass(filter, "filterLabel");
@@ -142,19 +142,88 @@ class EpisodicChartManager {
     network;
     nodeSearchTextBox;
     selectedEpisode = -1;
-    #onlySelectedEpisode = false;
-    #selectedNodeId = '';
+    onlySelectedEpisode = false;
+    selectedNodeId = '';
     #nodeSearchText = '';
+    fixedNodeIds = [];
+    fixedNodesNeedReset = false;
+    #visibleEdges = null;
 
     constructor(chartContainerId, initialEpisode, nodes, nodeFilterContainerId, nodeSearchId, nodeTypes, edges, edgeFilterContainerId, edgeTypes) {
+        const manager = this;
+        const nodeIds = nodes.map(node => node.id);
+
+        const baseDataProperties = [
+            new EpisodicDataObjectPropertyDefinition('episode'),
+            new EpisodicDataObjectPropertyDefinition('last_episode'),
+            new EpisodicDataObjectPropertyDefinition('label', 'labels', true),
+        ];
+        const nodeDataProperties = [
+            ...baseDataProperties,
+            new EpisodicDataObjectPropertyDefinition('id', '', true),
+            new EpisodicDataObjectPropertyDefinition('image', 'images', false, null, node => {
+                if (node.image != null) {
+                    node.shape = "image";
+                    node.heightConstraint = false;
+                    node.widthConstraint = false;
+                    if (!node.image.endsWith(".png"))
+                        node.image = "images/" + node.image + ".png";
+                    node.borderWidth = 3;
+                }
+                else {
+                    delete node.image;
+                    node.shape = "box";
+                    node.heightConstraint = 100;
+                    node.widthConstraint = 100;
+                    node.borderWidth = 4;
+                }
+                return node;
+            }),
+            new EpisodicDataObjectPropertyDefinition('type', 'types', true, value => nodeTypes.isValidValue(value)),
+            new EpisodicDataObjectPropertyDefinition('color', '', false, null, node => {
+                const color = manager.nodeDataSet.filterSet.filterOptions[node.type].color;
+                node.color = { border: color };
+                return node;
+            }),
+            new EpisodicDataObjectPropertyDefinition('fixed', '', false, null, node => {
+                if (manager.fixedNodesNeedReset && manager.fixedNodeIds.includes(node.id))
+                    node.fixed = manager.selectedNodeId == '' || manager.selectedNodeId == node.id;
+                return node;
+            }),
+            new EpisodicDataObjectPropertyDefinition('x'),
+            new EpisodicDataObjectPropertyDefinition('y'),
+        ];
+        const edgeDataProperties = [
+            ...baseDataProperties,
+            new EpisodicDataObjectPropertyDefinition('from', '', true, value => nodeIds.includes(value)),
+            new EpisodicDataObjectPropertyDefinition('to', '', true, value => nodeIds.includes(value)),
+            new EpisodicDataObjectPropertyDefinition('arrows', '_arrows', false, value => ["from", "to", null].includes(value)),
+            new EpisodicDataObjectPropertyDefinition('type', 'types', true, value => edgeTypes.isValidValue(value)),
+            new EpisodicDataObjectPropertyDefinition('color', '', false, null, edge => {
+                const color = manager.edgeDataSet.filterSet.filterOptions[edge.type].color;
+                if (color != null) {
+                    edge.color = color;
+                    if (!edge.hasOwnProperty("font"))
+                        edge.font = {};
+                    edge.font.color = color;
+                }
+                return edge;
+            }),
+        ];
+
+        const nodeDataDefinition = new EpisodicDataObjectDefinition(nodeDataProperties);
+        const edgeDataDefinition = new EpisodicDataObjectDefinition(edgeDataProperties);
+
+        nodes.forEach(node => nodeDataDefinition.validate(node));
+        edges.forEach(edge => edgeDataDefinition.validate(edge));
+
         this.chartContainer = document.getElementById(chartContainerId);
-        this.nodeDataSet = new EpisodicDataSet(this, nodes, nodeFilterContainerId, nodeTypes);
-        this.edgeDataSet = new EpisodicDataSet(this, edges, edgeFilterContainerId, edgeTypes);
+        this.nodeDataSet = new EpisodicDataSet(this, nodeDataDefinition, nodes, nodeFilterContainerId, nodeTypes);
+        this.edgeDataSet = new EpisodicDataSet(this, edgeDataDefinition, edges, edgeFilterContainerId, edgeTypes);
         this.nodeSearchTextBox = document.getElementById(nodeSearchId);
 
-        const manager = this;
-        this.nodeDataSet.dataObjectTransformFunc = function (node, episode) { return manager.#transformNodeForEpisode(node, episode); };
-        this.edgeDataSet.dataObjectTransformFunc = function (edge, episode) { return manager.#transformEdgeForEpisode(edge, episode); };
+        this.fixedNodeIds = this.nodeDataSet.dataSet.getIds({ filter: node => node.fixed });
+        
         this.nodeDataSet.customFilterFunc = function (node) { return manager.#customNodeFilter(node); };
         this.edgeDataSet.customFilterFunc = function (edge) { return manager.#customEdgeFilter(edge); };
 
@@ -192,7 +261,8 @@ class EpisodicChartManager {
         this.network = new vis.Network(this.chartContainer, data, this.chartOptions);
 
         this.network.addEventListener('selectNode', e => {
-            manager.#selectedNodeId = e.nodes[0];
+            manager.selectedNodeId = e.nodes[0];
+            manager.fixedNodesNeedReset = true;
 
             //selecting a node clears the active search
             manager.nodeSearchTextBox.value = '';
@@ -202,7 +272,9 @@ class EpisodicChartManager {
         });
 
         this.network.addEventListener('deselectNode', e => {
-            manager.#selectedNodeId = '';
+            manager.selectedNodeId = '';
+            manager.fixedNodesNeedReset = true;
+
             manager.#refreshDataViews();
         });
 
@@ -221,134 +293,190 @@ class EpisodicChartManager {
     update(episode, onlySelectedEpisode) {
         if (this.selectedEpisode != episode) {
             this.selectedEpisode = episode;
-            this.nodeDataSet.updateDataObjectsForEpisode(episode);
             this.edgeDataSet.updateDataObjectsForEpisode(episode);
+            this.nodeDataSet.updateDataObjectsForEpisode(episode);
         }
-        this.#onlySelectedEpisode = onlySelectedEpisode;
+        this.onlySelectedEpisode = onlySelectedEpisode;
 
         this.#refreshDataViews();
     }
 
     #refreshDataViews() {
-        this.nodeDataSet.dataView.refresh();
+        this.#visibleEdges = null;
         this.edgeDataSet.dataView.refresh();
-    }
-
-    #transformNodeForEpisode(node, episode) {
-        const color = this.nodeDataSet.filterSet.filterOptions[node.type].color;
-        node.color = { border: color };
-
-        if (node.hasOwnProperty("images"))
-            node.image = EpisodicDataSet.getEpisodicPropertyOfDataObject(node, "images", episode);
-        if (node.image != null) {
-            node.shape = "image";
-            node.heightConstraint = false;
-            node.widthConstraint = false;
-            if (!node.image.endsWith(".png"))
-                node.image = "images/" + node.image + ".png";
-            node.borderWidth = 3;
-        }
-        else {
-            delete node.image;
-            node.shape = "box";
-            node.heightConstraint = 100;
-            node.widthConstraint = 100;
-            node.borderWidth = 4;
-        }
-
-        return node;
-    }
-
-    #transformEdgeForEpisode(edge, episode) {
-        const color = this.edgeDataSet.filterSet.filterOptions[edge.type].color;
-
-        if (color != null) {
-            edge.color = color;
-            if (!edge.hasOwnProperty("font"))
-                edge.font = {};
-            edge.font.color = color;
-        }
-
-        if (edge.hasOwnProperty("_arrows")) {
-            const arrows = EpisodicDataSet.getEpisodicPropertyOfDataObject(edge, "_arrows", episode);
-            if (arrows != null)
-                edge.arrows = arrows;
-            else
-                delete edge.arrows;
-        }
-
-        return edge;
-    }
-
-    #customNodeFilter(node) {
-        if (this.#selectedNodeId != '') {
-            if (node.id != this.#selectedNodeId
-                && this.edgeDataSet.dataSet.get({
-                    filter: edge => EpisodicDataSet.isWithinEpisodeRange(edge, this.selectedEpisode) &&
-                        ((edge.to == this.#selectedNodeId && edge.from == node.id) || (edge.from == this.#selectedNodeId && edge.to == node.id))
-                }).length == 0)
-                return false;
-        }
-
-        if (this.#onlySelectedEpisode) {
-            let inThisEpisode = false;
-            if (EpisodicChartManager.#hadEpisodeUpdate(node, this.selectedEpisode)) {
-                inThisEpisode = true;
-            }
-            else if (this.edgeDataSet.dataSet.get({
-                filter: edge => (edge.to == node.id || edge.from == node.id) && EpisodicChartManager.#hadEpisodeUpdate(edge, this.selectedEpisode)
-            }).length > 0)
-                inThisEpisode = true;
-
-            if (!inThisEpisode)
-                return false;
-        }
-
-        if (this.#nodeSearchText != '') {
-            if (!node.label.toLowerCase().includes(this.#nodeSearchText.toLowerCase()))
-                return false;
-        }
-
-        const edgeFilters = this.edgeDataSet.getActiveFilterOptions();
-        if (edgeFilters.length > 0) {
-            if (this.edgeDataSet.dataSet.get({
-                filter: edge => EpisodicDataSet.isWithinEpisodeRange(edge, this.selectedEpisode)
-                    && (edge.to == node.id || edge.from == node.id)
-                    && (edgeFilters.includes(edge.type) || edgeFilters.includes(edge.type.toString()))
-                    && (this.#selectedNodeId == '' || edge.to == this.#selectedNodeId || edge.from == this.#selectedNodeId)
-            }).length == 0)
-                return false;
-        }
-
-        return true;
+        this.nodeDataSet.dataView.refresh();
+        this.fixedNodesNeedReset = false;
     }
 
     #customEdgeFilter(edge) {
-        if (!this.#onlySelectedEpisode && this.#selectedNodeId == '')
-            return true;
-        if (this.#onlySelectedEpisode && !EpisodicChartManager.#hadEpisodeUpdate(edge, this.selectedEpisode))
+        if (this.selectedNodeId != '' && edge.to != this.selectedNodeId && edge.from != this.selectedNodeId)
             return false;
-        if (this.#selectedNodeId != '' && edge.to != this.#selectedNodeId && edge.from != this.#selectedNodeId)
+
+        if (this.onlySelectedEpisode && !this.edgeDataSet.dataObjectDefinition.hadUpdateInEpisode(edge, this.selectedEpisode))
             return false;
 
         return true;
     }
 
-    static #hadEpisodeUpdate(dataObject, episode) {
+    #customNodeFilter(node) {
+        if (this.#visibleEdges == null) {
+            this.#visibleEdges = this.edgeDataSet.dataView.get();
+        }
+        const connectedToVisibleEdges = this.#visibleEdges.some(edge => edge.from == node.id || edge.to == node.id);
+
+        if (!connectedToVisibleEdges) {
+            if (this.selectedNodeId != '' && node.id != this.selectedNodeId)
+                return false;
+
+            if (this.onlySelectedEpisode && !this.nodeDataSet.dataObjectDefinition.hadUpdateInEpisode(node, this.selectedEpisode))
+                return false;
+
+            if (this.#nodeSearchText != '') {
+                if (!node.label.toLowerCase().includes(this.#nodeSearchText.toLowerCase()))
+                    return false;
+            }
+        }
+
+        return true;
+    }
+}
+
+class EpisodicDataObjectDefinition {
+    propertyDefinitions;
+
+    constructor(propertyDefinitions) {
+        this.propertyDefinitions = propertyDefinitions;
+    }
+
+    validate(dataObject) {
+        try {
+            Object.getOwnPropertyNames(dataObject).forEach(propertyName => {
+                if (!this.propertyDefinitions.some(propertyDefinition =>
+                    propertyDefinition.directPropertyName == propertyName
+                    || propertyDefinition.episodicPropertyName == propertyName))
+                    throw new Error("Unknown property: " + propertyName);
+            });
+
+            this.propertyDefinitions.forEach(propertyDefinition => propertyDefinition.validate(dataObject));
+        }
+        catch (error) {
+            console.log(dataObject);
+            throw error;
+        }
+    }
+
+    transformForEpisode(dataObject, episode) {
+        this.propertyDefinitions.forEach(property => {
+            dataObject = property.transformForEpisode(dataObject, episode);
+        });
+        return dataObject;
+    }
+
+    hadUpdateInEpisode(dataObject, episode) {
         if (episode == 1)
             return true;
-
-        if (dataObject.hasOwnProperty("episode") && dataObject.episode == episode)
+        if (dataObject.hasOwnProperty("episode") && dataObject.episode.toString() == episode.toString())
             return true;
+        return this.propertyDefinitions.some(property => property.hadUpdateInEpisode(dataObject, episode));
+    }
+}
 
-        const episodicProperties = ["images", "labels", "types", "_arrows"];
-        return episodicProperties.some(prop => didPropertyChange(prop));
+class EpisodicDataObjectPropertyDefinition {
+    directPropertyName;
+    episodicPropertyName = '';
+    required = false;
+    isAllowedValue = function (value) { return true; };
+    transformForEpisodeCustomFunc = function (dataObject, episode) { return dataObject; };
 
-        function didPropertyChange(propertyName) {
-            if (!dataObject.hasOwnProperty(propertyName))
-                return false;
-            return dataObject[propertyName].hasOwnProperty(episode);
+    constructor(directPropertyName, episodicPropertyName = '', required = false, isAllowedValueFunc = null, transformForEpisodeCustomFunc = null) {
+        this.directPropertyName = directPropertyName;
+        this.episodicPropertyName = episodicPropertyName;
+        this.required = required;
+        if (isAllowedValueFunc != null)
+            this.isAllowedValue = isAllowedValueFunc;
+        if (transformForEpisodeCustomFunc != null)
+            this.transformForEpisodeCustomFunc = transformForEpisodeCustomFunc;
+    }
+
+    validate(dataObject) {
+        if (this.required) {
+            if (!dataObject.hasOwnProperty(this.directPropertyName)) {
+                if (this.episodicPropertyName == '' || !dataObject.hasOwnProperty(this.episodicPropertyName))
+                    throw new Error("Missing required property: " + this.directPropertyName);
+            }
         }
+
+        let episodicValues = null;
+        let episodicValueKeys = [];
+        if (dataObject.hasOwnProperty(this.episodicPropertyName)) {
+            if (dataObject.hasOwnProperty(this.directPropertyName))
+                throw new Error("Object has both direct property and episodic property set");
+
+            episodicValues = dataObject[this.episodicPropertyName];
+            if (typeof episodicValues !== "object")
+                throw new Error("Bad value for episodic property: " + this.episodicPropertyName);
+
+            episodicValueKeys = Object.getOwnPropertyNames(episodicValues);
+            if (episodicValueKeys.some(episodicValueKey => {
+                if (Number.isFinite(episodicValueKey))
+                    return false;
+                if (episodicValueKey.includes("_only")) {
+                    let numberStr = episodicValueKey.replace("_only", '');
+                    return !isFinite(numberStr);
+                }
+            }))
+                throw new Error("Bad value for episodic property: " + this.episodicPropertyName);
+        }
+
+        if (this.isAllowedValue != null) {
+            if (dataObject.hasOwnProperty(this.directPropertyName)) {
+                if (!this.isAllowedValue(dataObject[this.directPropertyName]))
+                    throw new Error("Bad value for limited property: " + this.directPropertyName);
+            }
+            else if (episodicValues != null) {
+                if (episodicValueKeys.some(episodicValueKey => !this.isAllowedValue(episodicValues[episodicValueKey])))
+                    throw new Error("Bad value for limited property: " + this.episodicPropertyName);
+            }
+        }
+    }
+
+    transformForEpisode(dataObject, episode) {
+        if (dataObject.hasOwnProperty(this.episodicPropertyName)) {
+            const episodicValue = this.getEpisodicValue(dataObject, episode);
+            if (episodicValue != null)
+                dataObject[this.directPropertyName] = episodicValue;
+            else
+                delete dataObject[this.directPropertyName];
+        }
+
+        dataObject = this.transformForEpisodeCustomFunc(dataObject, episode);
+
+        return dataObject;
+    }
+
+    getEpisodicValue(dataObject, episode) {
+        if (!dataObject.hasOwnProperty(this.episodicPropertyName)
+            || dataObject[this.episodicPropertyName] == null)
+            return null;
+
+        const episodicValues = dataObject[this.episodicPropertyName];
+        if (episodicValues.hasOwnProperty(episode + "_only"))
+            return episodicValues[episode + "_only"];
+
+        let count = episode;
+        while (!episodicValues.hasOwnProperty(count) && count > 0)
+            count--;
+        if (count > 0)
+            return episodicValues[count];
+
+        return null;
+    }
+
+    hadUpdateInEpisode(dataObject, episode) {
+        if (this.episodicPropertyName == '' || !dataObject.hasOwnProperty(this.episodicPropertyName))
+            return false;
+        const episodicValues = dataObject[this.episodicPropertyName];
+        return episodicValues.hasOwnProperty(episode) || episodicValues.hasOwnProperty(episode.toString()) || episodicValues.hasOwnProperty(episode + "_only");
     }
 }
 
